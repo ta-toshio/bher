@@ -1,29 +1,41 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
+# GraphQLのscalar型であるTimeをGoの構造体time.Timeにマッピングする
+scalar Time
 
+# 後でEntのenum(Go側の型)にマップするenum型を定義する
+# https://graphql.org/learn/schema/#enumeration-types
+enum Status {
+  IN_PROGRESS
+  COMPLETED
+}
+
+# 生成されたEntモデルにマッピングするオブジェクト型を定義する
+# https://graphql.org/learn/schema/#object-types-and-fields
 type Todo {
   id: ID!
+  createdAt: Time
+  status: Status!
+  priority: Int!
   text: String!
-  done: Boolean!
-  user: User!
+  parent: Todo
+  children: [Todo!]
 }
 
-type User {
-  id: ID!
-  name: String!
-}
-
-type Query {
-  todos: [Todo!]!
-  userTodos(name: String!): [Todo!]!
-}
-
-input NewTodo {
+# 後述するMutation用のinput型を定義する
+# https://graphql.org/learn/schema/#input-types
+input TodoInput {
+  status: Status! = IN_PROGRESS
+  priority: Int
   text: String!
-  userName: String!
+  parent: ID
 }
 
+# 新しいtodoを作成するためのMutationを定義する
+# https://graphql.org/learn/queries/#mutations
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  createTodo(todo: TodoInput!): Todo!
+}
+
+# Define a query for getting all todos.
+type Query {
+  todos: [Todo!]
 }
