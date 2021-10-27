@@ -16,11 +16,12 @@ type User {
 
 type Query {
   todos: [Todo!]!
+  userTodos(name: String!): [Todo!]!
 }
 
 input NewTodo {
   text: String!
-  userId: String!
+  userName: String!
 }
 
 type Mutation {
