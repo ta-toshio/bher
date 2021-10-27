@@ -36,7 +36,7 @@ resolver:
 # if they match it will use them, otherwise it will generate them.
 autobind:
   - "github.com/ta-toshio/bherb/graph/model"
-  - "github.com/shellbear/go-graphql-example/ent"
+  - "github.com/ta-toshio/bherb/ent"
 
 # This section declares type mapping between the GraphQL and go type systems
 #
