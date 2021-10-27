@@ -47,6 +47,9 @@ models:
   ID:
     model:
       - github.com/99designs/gqlgen/graphql.IntID
+  Node:
+    model:
+      - github.com/ta-toshio/bherb/ent.Noder
   Status:
     model:
       - github.com/ta-toshio/bherb/ent/todo.Status
