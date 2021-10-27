@@ -3,6 +3,8 @@
 package todo
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/ta-toshio/bherb/ent/predicate"
@@ -98,10 +100,17 @@ func Text(v string) predicate.Todo {
 	})
 }
 
-// Done applies equality check predicate on the "done" field. It's identical to DoneEQ.
-func Done(v bool) predicate.Todo {
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDone), v))
+		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
+	})
+}
+
+// Priority applies equality check predicate on the "priority" field. It's identical to PriorityEQ.
+func Priority(v int) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPriority), v))
 	})
 }
 
@@ -216,39 +225,253 @@ func TextContainsFold(v string) predicate.Todo {
 	})
 }
 
-// DoneEQ applies the EQ predicate on the "done" field.
-func DoneEQ(v bool) predicate.Todo {
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDone), v))
+		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
 	})
 }
 
-// DoneNEQ applies the NEQ predicate on the "done" field.
-func DoneNEQ(v bool) predicate.Todo {
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDone), v))
+		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
 	})
 }
 
-// HasUser applies the HasEdge predicate on the "user" edge.
-func HasUser() predicate.Todo {
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.Todo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Todo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCreatedAt), v...))
+	})
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.Todo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Todo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
+	})
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldCreatedAt), v))
+	})
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
+	})
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldCreatedAt), v))
+	})
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
+	})
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v Status) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStatus), v))
+	})
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v Status) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStatus), v))
+	})
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...Status) predicate.Todo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Todo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldStatus), v...))
+	})
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...Status) predicate.Todo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Todo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldStatus), v...))
+	})
+}
+
+// PriorityEQ applies the EQ predicate on the "priority" field.
+func PriorityEQ(v int) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPriority), v))
+	})
+}
+
+// PriorityNEQ applies the NEQ predicate on the "priority" field.
+func PriorityNEQ(v int) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPriority), v))
+	})
+}
+
+// PriorityIn applies the In predicate on the "priority" field.
+func PriorityIn(vs ...int) predicate.Todo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Todo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPriority), v...))
+	})
+}
+
+// PriorityNotIn applies the NotIn predicate on the "priority" field.
+func PriorityNotIn(vs ...int) predicate.Todo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Todo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPriority), v...))
+	})
+}
+
+// PriorityGT applies the GT predicate on the "priority" field.
+func PriorityGT(v int) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPriority), v))
+	})
+}
+
+// PriorityGTE applies the GTE predicate on the "priority" field.
+func PriorityGTE(v int) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPriority), v))
+	})
+}
+
+// PriorityLT applies the LT predicate on the "priority" field.
+func PriorityLT(v int) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPriority), v))
+	})
+}
+
+// PriorityLTE applies the LTE predicate on the "priority" field.
+func PriorityLTE(v int) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPriority), v))
+	})
+}
+
+// HasChildren applies the HasEdge predicate on the "children" edge.
+func HasChildren() predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(UserTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
+			sqlgraph.To(ChildrenTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, ChildrenTable, ChildrenColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasUserWith applies the HasEdge predicate on the "user" edge with a given conditions (other predicates).
-func HasUserWith(preds ...predicate.User) predicate.Todo {
+// HasChildrenWith applies the HasEdge predicate on the "children" edge with a given conditions (other predicates).
+func HasChildrenWith(preds ...predicate.Todo) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(UserInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
+			sqlgraph.To(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, ChildrenTable, ChildrenColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasParent applies the HasEdge predicate on the "parent" edge.
+func HasParent() predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ParentTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ParentTable, ParentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
+func HasParentWith(preds ...predicate.Todo) predicate.Todo {
+	return predicate.Todo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ParentTable, ParentColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

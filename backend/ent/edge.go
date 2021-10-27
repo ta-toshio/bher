@@ -4,18 +4,18 @@ package ent
 
 import "context"
 
-func (t *Todo) User(ctx context.Context) (*User, error) {
-	result, err := t.Edges.UserOrErr()
+func (t *Todo) Children(ctx context.Context) ([]*Todo, error) {
+	result, err := t.Edges.ChildrenOrErr()
 	if IsNotLoaded(err) {
-		result, err = t.QueryUser().Only(ctx)
+		result, err = t.QueryChildren().All(ctx)
 	}
 	return result, err
 }
 
-func (u *User) Todos(ctx context.Context) ([]*Todo, error) {
-	result, err := u.Edges.TodosOrErr()
+func (t *Todo) Parent(ctx context.Context) (*Todo, error) {
+	result, err := t.Edges.ParentOrErr()
 	if IsNotLoaded(err) {
-		result, err = u.QueryTodos().All(ctx)
+		result, err = t.QueryParent().Only(ctx)
 	}
-	return result, err
+	return result, MaskNotFound(err)
 }

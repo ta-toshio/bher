@@ -2,7 +2,13 @@
 
 package model
 
-type NewTodo struct {
-	Text     string `json:"text"`
-	UserName string `json:"userName"`
+import (
+	"github.com/ta-toshio/bherb/ent/todo"
+)
+
+type TodoInput struct {
+	Status   todo.Status `json:"status"`
+	Priority *int        `json:"priority"`
+	Text     string      `json:"text"`
+	Parent   *int        `json:"parent"`
 }

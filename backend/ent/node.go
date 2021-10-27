@@ -51,8 +51,8 @@ func (t *Todo) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     t.ID,
 		Type:   "Todo",
-		Fields: make([]*Field, 2),
-		Edges:  make([]*Edge, 1),
+		Fields: make([]*Field, 4),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.Text); err != nil {
@@ -63,21 +63,47 @@ func (t *Todo) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "text",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(t.Done); err != nil {
+	if buf, err = json.Marshal(t.CreatedAt); err != nil {
 		return nil, err
 	}
 	node.Fields[1] = &Field{
-		Type:  "bool",
-		Name:  "done",
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.Status); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "todo.Status",
+		Name:  "status",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.Priority); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "int",
+		Name:  "priority",
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
-		Type: "User",
-		Name: "user",
+		Type: "Todo",
+		Name: "children",
 	}
-	err = t.QueryUser().
-		Select(user.FieldID).
+	err = t.QueryChildren().
+		Select(todo.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Todo",
+		Name: "parent",
+	}
+	err = t.QueryParent().
+		Select(todo.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +115,7 @@ func (u *User) Node(ctx context.Context) (node *Node, err error) {
 		ID:     u.ID,
 		Type:   "User",
 		Fields: make([]*Field, 1),
-		Edges:  make([]*Edge, 1),
+		Edges:  make([]*Edge, 0),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(u.Name); err != nil {
@@ -99,16 +125,6 @@ func (u *User) Node(ctx context.Context) (node *Node, err error) {
 		Type:  "string",
 		Name:  "name",
 		Value: string(buf),
-	}
-	node.Edges[0] = &Edge{
-		Type: "Todo",
-		Name: "todos",
-	}
-	err = u.QueryTodos().
-		Select(todo.FieldID).
-		Scan(ctx, &node.Edges[0].IDs)
-	if err != nil {
-		return nil, err
 	}
 	return node, nil
 }

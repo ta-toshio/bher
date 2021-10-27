@@ -216,15 +216,31 @@ func (c *TodoClient) GetX(ctx context.Context, id int) *Todo {
 	return obj
 }
 
-// QueryUser queries the user edge of a Todo.
-func (c *TodoClient) QueryUser(t *Todo) *UserQuery {
-	query := &UserQuery{config: c.config}
+// QueryChildren queries the children edge of a Todo.
+func (c *TodoClient) QueryChildren(t *Todo) *TodoQuery {
+	query := &TodoQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := t.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(todo.Table, todo.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, todo.UserTable, todo.UserColumn),
+			sqlgraph.To(todo.Table, todo.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, todo.ChildrenTable, todo.ChildrenColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryParent queries the parent edge of a Todo.
+func (c *TodoClient) QueryParent(t *Todo) *TodoQuery {
+	query := &TodoQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(todo.Table, todo.FieldID, id),
+			sqlgraph.To(todo.Table, todo.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, todo.ParentTable, todo.ParentColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -320,22 +336,6 @@ func (c *UserClient) GetX(ctx context.Context, id int) *User {
 		panic(err)
 	}
 	return obj
-}
-
-// QueryTodos queries the todos edge of a User.
-func (c *UserClient) QueryTodos(u *User) *TodoQuery {
-	query := &TodoQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(todo.Table, todo.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, user.TodosTable, user.TodosColumn),
-		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
 }
 
 // Hooks returns the client hooks.

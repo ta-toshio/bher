@@ -6,11 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/ta-toshio/bherb/ent/todo"
-	"github.com/ta-toshio/bherb/ent/user"
 )
 
 // TodoCreate is the builder for creating a Todo entity.
@@ -26,29 +26,80 @@ func (tc *TodoCreate) SetText(s string) *TodoCreate {
 	return tc
 }
 
-// SetDone sets the "done" field.
-func (tc *TodoCreate) SetDone(b bool) *TodoCreate {
-	tc.mutation.SetDone(b)
+// SetCreatedAt sets the "created_at" field.
+func (tc *TodoCreate) SetCreatedAt(t time.Time) *TodoCreate {
+	tc.mutation.SetCreatedAt(t)
 	return tc
 }
 
-// SetNillableDone sets the "done" field if the given value is not nil.
-func (tc *TodoCreate) SetNillableDone(b *bool) *TodoCreate {
-	if b != nil {
-		tc.SetDone(*b)
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (tc *TodoCreate) SetNillableCreatedAt(t *time.Time) *TodoCreate {
+	if t != nil {
+		tc.SetCreatedAt(*t)
 	}
 	return tc
 }
 
-// SetUserID sets the "user" edge to the User entity by ID.
-func (tc *TodoCreate) SetUserID(id int) *TodoCreate {
-	tc.mutation.SetUserID(id)
+// SetStatus sets the "status" field.
+func (tc *TodoCreate) SetStatus(t todo.Status) *TodoCreate {
+	tc.mutation.SetStatus(t)
 	return tc
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (tc *TodoCreate) SetUser(u *User) *TodoCreate {
-	return tc.SetUserID(u.ID)
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (tc *TodoCreate) SetNillableStatus(t *todo.Status) *TodoCreate {
+	if t != nil {
+		tc.SetStatus(*t)
+	}
+	return tc
+}
+
+// SetPriority sets the "priority" field.
+func (tc *TodoCreate) SetPriority(i int) *TodoCreate {
+	tc.mutation.SetPriority(i)
+	return tc
+}
+
+// SetNillablePriority sets the "priority" field if the given value is not nil.
+func (tc *TodoCreate) SetNillablePriority(i *int) *TodoCreate {
+	if i != nil {
+		tc.SetPriority(*i)
+	}
+	return tc
+}
+
+// AddChildIDs adds the "children" edge to the Todo entity by IDs.
+func (tc *TodoCreate) AddChildIDs(ids ...int) *TodoCreate {
+	tc.mutation.AddChildIDs(ids...)
+	return tc
+}
+
+// AddChildren adds the "children" edges to the Todo entity.
+func (tc *TodoCreate) AddChildren(t ...*Todo) *TodoCreate {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tc.AddChildIDs(ids...)
+}
+
+// SetParentID sets the "parent" edge to the Todo entity by ID.
+func (tc *TodoCreate) SetParentID(id int) *TodoCreate {
+	tc.mutation.SetParentID(id)
+	return tc
+}
+
+// SetNillableParentID sets the "parent" edge to the Todo entity by ID if the given value is not nil.
+func (tc *TodoCreate) SetNillableParentID(id *int) *TodoCreate {
+	if id != nil {
+		tc = tc.SetParentID(*id)
+	}
+	return tc
+}
+
+// SetParent sets the "parent" edge to the Todo entity.
+func (tc *TodoCreate) SetParent(t *Todo) *TodoCreate {
+	return tc.SetParentID(t.ID)
 }
 
 // Mutation returns the TodoMutation object of the builder.
@@ -122,9 +173,17 @@ func (tc *TodoCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (tc *TodoCreate) defaults() {
-	if _, ok := tc.mutation.Done(); !ok {
-		v := todo.DefaultDone
-		tc.mutation.SetDone(v)
+	if _, ok := tc.mutation.CreatedAt(); !ok {
+		v := todo.DefaultCreatedAt()
+		tc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := tc.mutation.Status(); !ok {
+		v := todo.DefaultStatus
+		tc.mutation.SetStatus(v)
+	}
+	if _, ok := tc.mutation.Priority(); !ok {
+		v := todo.DefaultPriority
+		tc.mutation.SetPriority(v)
 	}
 }
 
@@ -138,11 +197,19 @@ func (tc *TodoCreate) check() error {
 			return &ValidationError{Name: "text", err: fmt.Errorf(`ent: validator failed for field "text": %w`, err)}
 		}
 	}
-	if _, ok := tc.mutation.Done(); !ok {
-		return &ValidationError{Name: "done", err: errors.New(`ent: missing required field "done"`)}
+	if _, ok := tc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
-	if _, ok := tc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
+	if _, ok := tc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
+	}
+	if v, ok := tc.mutation.Status(); ok {
+		if err := todo.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "status": %w`, err)}
+		}
+	}
+	if _, ok := tc.mutation.Priority(); !ok {
+		return &ValidationError{Name: "priority", err: errors.New(`ent: missing required field "priority"`)}
 	}
 	return nil
 }
@@ -179,32 +246,67 @@ func (tc *TodoCreate) createSpec() (*Todo, *sqlgraph.CreateSpec) {
 		})
 		_node.Text = value
 	}
-	if value, ok := tc.mutation.Done(); ok {
+	if value, ok := tc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
+			Type:   field.TypeTime,
 			Value:  value,
-			Column: todo.FieldDone,
+			Column: todo.FieldCreatedAt,
 		})
-		_node.Done = value
+		_node.CreatedAt = value
 	}
-	if nodes := tc.mutation.UserIDs(); len(nodes) > 0 {
+	if value, ok := tc.mutation.Status(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: todo.FieldStatus,
+		})
+		_node.Status = value
+	}
+	if value, ok := tc.mutation.Priority(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: todo.FieldPriority,
+		})
+		_node.Priority = value
+	}
+	if nodes := tc.mutation.ChildrenIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   todo.UserTable,
-			Columns: []string{todo.UserColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   todo.ChildrenTable,
+			Columns: []string{todo.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: user.FieldID,
+					Column: todo.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.todo_user = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   todo.ParentTable,
+			Columns: []string{todo.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: todo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.todo_parent = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
