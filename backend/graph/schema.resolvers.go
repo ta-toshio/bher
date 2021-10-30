@@ -20,8 +20,11 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, todo model.TodoInput)
 		Save(ctx)
 }
 
-func (r *queryResolver) Todos(ctx context.Context) ([]*ent.Todo, error) {
-	return r.Client.Todo.Query().All(ctx)
+func (r *queryResolver) Todos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder) (*ent.TodoConnection, error) {
+	return r.Client.Todo.Query().
+		Paginate(ctx, after, first, before, last,
+			ent.WithTodoOrder(orderBy),
+		)
 }
 
 func (r *queryResolver) Node(ctx context.Context, id int) (ent.Noder, error) {
