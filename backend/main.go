@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"entgo.io/contrib/entgql"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 
 	"github.com/ta-toshio/bherb/ent"
+	"github.com/ta-toshio/bherb/ent/migrate"
 	"github.com/ta-toshio/bherb/graph"
 	"github.com/ta-toshio/bherb/graph/generated"
 )
@@ -26,7 +28,10 @@ func newClient() *ent.Client {
 	}
 
 	// Run the auto migration tool.
-	if err := client.Schema.Create(context.Background()); err != nil {
+	if err := client.Schema.Create(
+		context.Background(),
+		migrate.WithGlobalUniqueID(true),
+		); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 
@@ -45,6 +50,7 @@ func main() {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
 		Client: client,
 	}}))
+	srv.Use(entgql.Transactioner{TxOpener: client})
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)

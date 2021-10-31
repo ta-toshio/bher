@@ -12,7 +12,8 @@ import (
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, todo model.TodoInput) (*ent.Todo, error) {
-	return r.Client.Todo.Create().
+	client := ent.FromContext(ctx)
+	return client.Debug().Todo.Create().
 		SetText(todo.Text).
 		SetStatus(todo.Status).
 		SetNillablePriority(todo.Priority). // フィールド"priority"が指定された場合、値をセットします。
@@ -21,7 +22,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, todo model.TodoInput)
 }
 
 func (r *queryResolver) Todos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder) (*ent.TodoConnection, error) {
-	return r.Client.Todo.Query().
+	return r.Client.Debug().Todo.Query().
 		Paginate(ctx, after, first, before, last,
 			ent.WithTodoOrder(orderBy),
 		)
