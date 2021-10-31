@@ -22,3 +22,13 @@ services:
     volumes:
       - ./var/mysql:/var/lib/mysql
     env_file: ./docker/mysql/docker.env
+
+  client:
+    build:
+      context: .
+      dockerfile: ./docker/nextjs/Dockerfile
+    ports:
+      - "8402:3000"
+    volumes:
+      - ./frontend:/app
+    tty: true
