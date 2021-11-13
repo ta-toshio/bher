@@ -24,6 +24,7 @@ const useSearch = () => {
     }
 
     call()
+      .catch(e => console.log(e))
   }, [fetchTodos, after])
 
   return {
