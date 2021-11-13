@@ -23,7 +23,7 @@ function createApolloClient(options) {
 
   const httpLink = new HttpLink({
     uri: (() => {
-      return process.env.API_URI + '/graphql'
+      return process.env.API_URI
     })(),
     // credentials: 'same-origin', // Additional fetch() options like `credentials` or `headers`
     credentials: 'include',
