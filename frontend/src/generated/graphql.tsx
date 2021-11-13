@@ -288,6 +288,13 @@ export type TodosQueryVariables = Exact<{
 
 export type TodosQuery = { __typename?: 'Query', todos?: { __typename?: 'TodoConnection', totalCount: number, edges?: Array<{ __typename?: 'TodoEdge', cursor: any, node?: { __typename?: 'Todo', id: string, createdAt?: any | null | undefined, status: Status, priority: number, text: string, parent?: { __typename?: 'Todo', id: string, createdAt?: any | null | undefined, status: Status, priority: number, text: string } | null | undefined, children?: Array<{ __typename?: 'Todo', id: string, createdAt?: any | null | undefined, status: Status, priority: number, text: string }> | null | undefined } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null | undefined, endCursor?: any | null | undefined, hasNextPage: boolean, hasPreviousPage: boolean } } | null | undefined };
 
+export type CreateTodoMutationVariables = Exact<{
+  input: CreateTodoInput;
+}>;
+
+
+export type CreateTodoMutation = { __typename?: 'Mutation', createTodo: { __typename?: 'Todo', id: string, createdAt?: any | null | undefined, status: Status, priority: number, text: string, parent?: { __typename?: 'Todo', id: string, createdAt?: any | null | undefined, status: Status, priority: number, text: string } | null | undefined, children?: Array<{ __typename?: 'Todo', id: string, createdAt?: any | null | undefined, status: Status, priority: number, text: string }> | null | undefined } };
+
 export const PageInfoFragmentFragmentDoc = gql`
     fragment pageInfoFragment on PageInfo {
   startCursor
@@ -368,3 +375,42 @@ export function useTodosLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Todo
 export type TodosQueryHookResult = ReturnType<typeof useTodosQuery>;
 export type TodosLazyQueryHookResult = ReturnType<typeof useTodosLazyQuery>;
 export type TodosQueryResult = Apollo.QueryResult<TodosQuery, TodosQueryVariables>;
+export const CreateTodoDocument = gql`
+    mutation CreateTodo($input: CreateTodoInput!) {
+  createTodo(input: $input) {
+    ...todoFragment
+    parent {
+      ...todoFragment
+    }
+    children {
+      ...todoFragment
+    }
+  }
+}
+    ${TodoFragmentFragmentDoc}`;
+export type CreateTodoMutationFn = Apollo.MutationFunction<CreateTodoMutation, CreateTodoMutationVariables>;
+
+/**
+ * __useCreateTodoMutation__
+ *
+ * To run a mutation, you first call `useCreateTodoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTodoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTodoMutation, { data, loading, error }] = useCreateTodoMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateTodoMutation(baseOptions?: Apollo.MutationHookOptions<CreateTodoMutation, CreateTodoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTodoMutation, CreateTodoMutationVariables>(CreateTodoDocument, options);
+      }
+export type CreateTodoMutationHookResult = ReturnType<typeof useCreateTodoMutation>;
+export type CreateTodoMutationResult = Apollo.MutationResult<CreateTodoMutation>;
+export type CreateTodoMutationOptions = Apollo.BaseMutationOptions<CreateTodoMutation, CreateTodoMutationVariables>;

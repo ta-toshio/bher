@@ -49,3 +49,18 @@ export const TODOS = gql`
   ${todoFragment}
   ${pageInfoFragment}
 `
+
+export const CREATE_TODO = gql`
+  mutation CreateTodo($input: CreateTodoInput!) {
+    createTodo(input: $input) {
+      ...todoFragment
+      parent {
+        ...todoFragment
+      }
+      children {
+        ...todoFragment
+      }
+    }
+  }
+  ${todoFragment}
+`
