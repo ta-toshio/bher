@@ -1,0 +1,31 @@
+.field:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+.register {
+  margin-top: 10rem;
+  background: white;
+  border-radius: 10px;
+}
+
+.formWrap {
+
+  :global .title {
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
+
+  :global .description {
+    margin-top: 1rem;
+    margin-bottom: 1rem !important;
+    color: var(--textLight);
+    font-size: 1.15rem;
+  }
+
+  :global small {
+    color: var(--textLight);
+  }
+}
+
+
+

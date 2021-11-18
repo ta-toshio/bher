@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Form from '../components/chart/Form'
 
 export default function Home() {
   return (
@@ -11,7 +10,6 @@ export default function Home() {
       </Head>
 
       <main className="container">
-        <Form />
       </main>
     </div>
   )
