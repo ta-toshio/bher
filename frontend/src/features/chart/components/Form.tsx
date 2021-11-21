@@ -1,109 +1,21 @@
 import React from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form'
-// import { yupResolver } from '@hookform/resolvers/yup'
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
-import * as yup from 'yup'
 import styles from '../styles/Form.module.scss'
 import prefectures from '../../../utils/prefecture'
+import useChartForm, {
+  experiences,
+  IFormInput,
+  noticeReasons, whenOptions,
+} from '../hooks/useForm'
 
-interface IFormInput {
-  my_checkbox: string[];
-  patch: number;
-  generation: number;
-  gender: number;
-  allergy: number;
-  rash: number;
-  sting: number;
-  dye_where: number;
-  dye_when: number;
-  dye_when_unit: number;
-  hena_when: number;
-  hena_when_unit: number;
-  rebonded_when: number;
-  rebond_when_unit: number;
-  manicure_when: number;
-  manicure_when_unit: number;
-  perm_when: number;
-  perm_when_unit: number;
-  treatment_when: number;
-  treatment_when_unit: number;
-  notice_reason: number;
-  last_name: string;
-  first_name: string;
-  last_name_hiragana: string;
-  first_name_hiragana: string;
-  postal_code: number;
-  prefecture: number;
-  address: string;
-  tel: string;
-  mail: string;
-}
-
-const experiencies = [
-  {
-    label: 'ヘナ',
-    key: 'hena_when',
-    keyUnit: 'hena_when_unit',
-  },
-  {
-    label: '縮毛矯正',
-    key: 'rebond_when',
-    keyUnit: 'rebond_when_unit',
-  },
-  {
-    label: 'へマニキュア',
-    key: 'manicure_when',
-    keyUnit: 'manicure_when_unit',
-  },
-  {
-    label: 'デジタルパーマ',
-    key: 'perm_when',
-    keyUnit: 'perm_when_unit',
-  },
-  {
-    label: 'トリートメント',
-    key: 'treatment_when',
-    keyUnit: 'treatment_when_unit',
-  },
-]
-
-const noticeReasons = [
-  {
-    value: 1,
-    text: '店を直接見つけて',
-  },
-  {
-    value: 2,
-    text: '口コミ',
-  },
-  {
-    value: 3,
-    text: 'テレビ',
-  },
-]
-
-const schema = yup.object({
-  patch: yup.number().required().nullable(),
-  generation: yup.number().positive().integer().required().nullable(),
-  gender: yup.number().positive().integer().required().nullable(),
-  allergy: yup.number().integer().required().nullable(),
-  rash: yup.number().integer().required().nullable(),
-  first_name: yup.string().required(),
-  last_name: yup.string().required(),
-  first_name_hiragana: yup.string().required(),
-  last_name_hiragana: yup.string().required(),
-}).required()
-
-const initialValues = {}
 
 const Form: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>({
-    resolver: yupResolver(schema),
-    defaultValues: initialValues,
-  })
-  const onSubmit: SubmitHandler<IFormInput> = data => console.log(data)
 
-  console.log(errors)
+  const {
+    register,
+    handleSubmit,
+    errors,
+    onSubmit,
+  } = useChartForm()
 
   return (
     <section className='container'>
@@ -117,7 +29,7 @@ const Form: React.FC = () => {
               <form onSubmit={handleSubmit(onSubmit)}>
 
                 <div className='field mb-5'>
-                  <label className='label'>チェックもしくはYes/Noをご記入ください</label>
+                  <label className='label'>下記内容ご了承いただける場合チェックをお願いします。</label>
                   <div className='control'>
                     <input type='checkbox' value='1' {...register('my_checkbox', {})} />
                     <label className='label is-inline ml-2'>
@@ -175,7 +87,7 @@ const Form: React.FC = () => {
                         <input
                           {...register('generation', { required: true })}
                           type='radio'
-                          value={10}
+                          value={i+1}
                           className={i !== 0 ? 'ml-4' : ''}
                         />
                         <label className='label is-inline ml-2'>
@@ -320,17 +232,16 @@ const Form: React.FC = () => {
                   </label>
                   <div className='control'>
                     <label className='label is-inline mr-6'>いつ</label>
-                    <input
-                      {...register('dye_when', { required: true })}
-                      type='number'
-                      placeholder={'10'}
-                      className='input is-small'
-                      style={{ width: '100px' }}
-                    />
                     <div className='select is-small'>
-                      <select {...register('dye_when_unit', { required: true })}>
-                        <option value='day'>日前</option>
-                        <option value='month'>ヶ月前</option>
+                      <select {...register('dye_when', { required: true })}>
+                        {whenOptions.map(whenOption => (
+                          <option
+                            key={`when-option-${whenOption.value}`}
+                            value={whenOption.value}
+                          >
+                            {whenOption.text}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -338,28 +249,31 @@ const Form: React.FC = () => {
                     <p className='help is-danger'>{errors.dye_when.message}</p>
                   )}
 
-                  <br />
-
                   <div className='control'>
                     <label className='label is-inline mr-6'>どこで</label>
-                    <input
-                      {...register('dye_where', { required: true })}
-                      type='radio'
-                      value={0}
-                    />
-                    <label className='label is-inline ml-2'>
-                      自宅
-                    </label>
 
                     <input
-                      {...register('dye_where', { required: true })}
+                      {...register('dye_where', {})}
                       type='radio'
-                      value={1}
+                      value={"0"}
+                    />
+                    <label className='label is-inline ml-2'>なし</label>
+
+                    <input
+                      {...register('dye_where', {})}
+                      type='radio'
+                      value={"1"}
                       className='ml-4'
                     />
-                    <label className='label is-inline ml-2'>
-                      美容院
-                    </label>
+                    <label className='label is-inline ml-2'>自宅</label>
+
+                    <input
+                      {...register('dye_where', {})}
+                      type='radio'
+                      value={"2"}
+                      className='ml-4'
+                    />
+                    <label className='label is-inline ml-2'>美容院</label>
                   </div>
                   {errors && errors.dye_where && (
                     <p className='help is-danger'>{errors.dye_where.message}</p>
@@ -371,10 +285,23 @@ const Form: React.FC = () => {
                     以下のメニューを1年以内に利用されたことはありますがありますか。ある場合は時期もお応えください。
                   </label>
 
-                  {experiencies.map((experience, i) => (
+                  {experiences.map((experience, i) => (
                     <React.Fragment key={`experience-${i}`}>
                       <div className='control'>
                         <label className='label is-inline mr-6'>{experience.label}</label>
+                        <div className='select is-small'>
+                          <select {...register(experience.keyUnit as keyof IFormInput, {})}>
+                            {whenOptions.map(whenOption => (
+                              <option
+                                key={`when-option-${whenOption.value}`}
+                                value={whenOption.value}
+                              >
+                                {whenOption.text}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        {/*
                         <input
                           {...register(experience.key as keyof IFormInput, {})}
                           type='number'
@@ -388,6 +315,7 @@ const Form: React.FC = () => {
                             <option value='month'>ヶ月前</option>
                           </select>
                         </div>
+                        */}
                       </div>
                       {errors && errors[experience.key] && (
                         <p className='help is-danger'>{errors[experience.key].message}</p>
@@ -559,13 +487,13 @@ const Form: React.FC = () => {
                   </label>
                   <div className='control'>
                     <input
-                      {...register('mail', {})}
+                      {...register('email', {})}
                       type='text'
                       className='input mb-2'
                     />
                   </div>
-                  {errors && errors.mail && (
-                    <p className='help is-danger'>{errors.mail.message}</p>
+                  {errors && errors.email && (
+                    <p className='help is-danger'>{errors.email.message}</p>
                   )}
                 </div>
 
