@@ -8,6 +8,41 @@ import (
 )
 
 var (
+	// ChartsColumns holds the columns for the "charts" table.
+	ChartsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "patch", Type: field.TypeBool, Default: false},
+		{Name: "generation", Type: field.TypeInt, Default: 0},
+		{Name: "gender", Type: field.TypeInt, Default: 0},
+		{Name: "allergy", Type: field.TypeInt, Default: 0},
+		{Name: "rash", Type: field.TypeInt, Default: 0},
+		{Name: "sting", Type: field.TypeInt, Default: 0},
+		{Name: "dye_when", Type: field.TypeInt, Default: 0},
+		{Name: "dye_where", Type: field.TypeInt, Default: 0},
+		{Name: "hena_when", Type: field.TypeInt, Default: 0},
+		{Name: "rebonded_when", Type: field.TypeInt, Default: 0},
+		{Name: "manicure_when", Type: field.TypeInt, Default: 0},
+		{Name: "perm_when", Type: field.TypeInt, Default: 0},
+		{Name: "treatment_when", Type: field.TypeInt, Default: 0},
+		{Name: "notice_reason", Type: field.TypeInt, Default: 0},
+		{Name: "last_name", Type: field.TypeString, Size: 2147483647},
+		{Name: "first_name", Type: field.TypeString, Size: 2147483647},
+		{Name: "last_name_hiragana", Type: field.TypeString, Size: 2147483647},
+		{Name: "first_name_hiragana", Type: field.TypeString, Size: 2147483647},
+		{Name: "postal_code", Type: field.TypeString, Size: 2147483647},
+		{Name: "prefecture_id", Type: field.TypeInt, Default: 0},
+		{Name: "address", Type: field.TypeString, Size: 2147483647},
+		{Name: "tel", Type: field.TypeString, Size: 2147483647},
+		{Name: "email", Type: field.TypeString, Size: 2147483647},
+	}
+	// ChartsTable holds the schema information for the "charts" table.
+	ChartsTable = &schema.Table{
+		Name:       "charts",
+		Columns:    ChartsColumns,
+		PrimaryKey: []*schema.Column{ChartsColumns[0]},
+	}
 	// TodosColumns holds the columns for the "todos" table.
 	TodosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -44,6 +79,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ChartsTable,
 		TodosTable,
 		UsersTable,
 	}

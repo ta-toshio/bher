@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ta-toshio/bherb/ent/chart"
 	"github.com/ta-toshio/bherb/ent/predicate"
 	"github.com/ta-toshio/bherb/ent/todo"
 	"github.com/ta-toshio/bherb/ent/user"
@@ -24,9 +25,2063 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeTodo = "Todo"
-	TypeUser = "User"
+	TypeChart = "Chart"
+	TypeTodo  = "Todo"
+	TypeUser  = "User"
 )
+
+// ChartMutation represents an operation that mutates the Chart nodes in the graph.
+type ChartMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *int
+	create_time         *time.Time
+	update_time         *time.Time
+	patch               *bool
+	generation          *int
+	addgeneration       *int
+	gender              *int
+	addgender           *int
+	allergy             *int
+	addallergy          *int
+	rash                *int
+	addrash             *int
+	sting               *int
+	addsting            *int
+	dye_when            *int
+	adddye_when         *int
+	dye_where           *int
+	adddye_where        *int
+	hena_when           *int
+	addhena_when        *int
+	rebonded_when       *int
+	addrebonded_when    *int
+	manicure_when       *int
+	addmanicure_when    *int
+	perm_when           *int
+	addperm_when        *int
+	treatment_when      *int
+	addtreatment_when   *int
+	notice_reason       *int
+	addnotice_reason    *int
+	last_name           *string
+	first_name          *string
+	last_name_hiragana  *string
+	first_name_hiragana *string
+	postal_code         *string
+	prefecture_id       *int
+	addprefecture_id    *int
+	address             *string
+	tel                 *string
+	email               *string
+	clearedFields       map[string]struct{}
+	done                bool
+	oldValue            func(context.Context) (*Chart, error)
+	predicates          []predicate.Chart
+}
+
+var _ ent.Mutation = (*ChartMutation)(nil)
+
+// chartOption allows management of the mutation configuration using functional options.
+type chartOption func(*ChartMutation)
+
+// newChartMutation creates new mutation for the Chart entity.
+func newChartMutation(c config, op Op, opts ...chartOption) *ChartMutation {
+	m := &ChartMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeChart,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withChartID sets the ID field of the mutation.
+func withChartID(id int) chartOption {
+	return func(m *ChartMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Chart
+		)
+		m.oldValue = func(ctx context.Context) (*Chart, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Chart.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withChart sets the old Chart of the mutation.
+func withChart(node *Chart) chartOption {
+	return func(m *ChartMutation) {
+		m.oldValue = func(context.Context) (*Chart, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ChartMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ChartMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ChartMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *ChartMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *ChartMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *ChartMutation) ResetCreateTime() {
+	m.create_time = nil
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (m *ChartMutation) SetUpdateTime(t time.Time) {
+	m.update_time = &t
+}
+
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *ChartMutation) UpdateTime() (r time.Time, exists bool) {
+	v := m.update_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateTime returns the old "update_time" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
+	}
+	return oldValue.UpdateTime, nil
+}
+
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *ChartMutation) ResetUpdateTime() {
+	m.update_time = nil
+}
+
+// SetPatch sets the "patch" field.
+func (m *ChartMutation) SetPatch(b bool) {
+	m.patch = &b
+}
+
+// Patch returns the value of the "patch" field in the mutation.
+func (m *ChartMutation) Patch() (r bool, exists bool) {
+	v := m.patch
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPatch returns the old "patch" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldPatch(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPatch is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPatch requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPatch: %w", err)
+	}
+	return oldValue.Patch, nil
+}
+
+// ResetPatch resets all changes to the "patch" field.
+func (m *ChartMutation) ResetPatch() {
+	m.patch = nil
+}
+
+// SetGeneration sets the "generation" field.
+func (m *ChartMutation) SetGeneration(i int) {
+	m.generation = &i
+	m.addgeneration = nil
+}
+
+// Generation returns the value of the "generation" field in the mutation.
+func (m *ChartMutation) Generation() (r int, exists bool) {
+	v := m.generation
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGeneration returns the old "generation" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldGeneration(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldGeneration is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldGeneration requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGeneration: %w", err)
+	}
+	return oldValue.Generation, nil
+}
+
+// AddGeneration adds i to the "generation" field.
+func (m *ChartMutation) AddGeneration(i int) {
+	if m.addgeneration != nil {
+		*m.addgeneration += i
+	} else {
+		m.addgeneration = &i
+	}
+}
+
+// AddedGeneration returns the value that was added to the "generation" field in this mutation.
+func (m *ChartMutation) AddedGeneration() (r int, exists bool) {
+	v := m.addgeneration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetGeneration resets all changes to the "generation" field.
+func (m *ChartMutation) ResetGeneration() {
+	m.generation = nil
+	m.addgeneration = nil
+}
+
+// SetGender sets the "gender" field.
+func (m *ChartMutation) SetGender(i int) {
+	m.gender = &i
+	m.addgender = nil
+}
+
+// Gender returns the value of the "gender" field in the mutation.
+func (m *ChartMutation) Gender() (r int, exists bool) {
+	v := m.gender
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGender returns the old "gender" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldGender(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldGender is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldGender requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGender: %w", err)
+	}
+	return oldValue.Gender, nil
+}
+
+// AddGender adds i to the "gender" field.
+func (m *ChartMutation) AddGender(i int) {
+	if m.addgender != nil {
+		*m.addgender += i
+	} else {
+		m.addgender = &i
+	}
+}
+
+// AddedGender returns the value that was added to the "gender" field in this mutation.
+func (m *ChartMutation) AddedGender() (r int, exists bool) {
+	v := m.addgender
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetGender resets all changes to the "gender" field.
+func (m *ChartMutation) ResetGender() {
+	m.gender = nil
+	m.addgender = nil
+}
+
+// SetAllergy sets the "allergy" field.
+func (m *ChartMutation) SetAllergy(i int) {
+	m.allergy = &i
+	m.addallergy = nil
+}
+
+// Allergy returns the value of the "allergy" field in the mutation.
+func (m *ChartMutation) Allergy() (r int, exists bool) {
+	v := m.allergy
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAllergy returns the old "allergy" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldAllergy(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAllergy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAllergy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAllergy: %w", err)
+	}
+	return oldValue.Allergy, nil
+}
+
+// AddAllergy adds i to the "allergy" field.
+func (m *ChartMutation) AddAllergy(i int) {
+	if m.addallergy != nil {
+		*m.addallergy += i
+	} else {
+		m.addallergy = &i
+	}
+}
+
+// AddedAllergy returns the value that was added to the "allergy" field in this mutation.
+func (m *ChartMutation) AddedAllergy() (r int, exists bool) {
+	v := m.addallergy
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAllergy resets all changes to the "allergy" field.
+func (m *ChartMutation) ResetAllergy() {
+	m.allergy = nil
+	m.addallergy = nil
+}
+
+// SetRash sets the "rash" field.
+func (m *ChartMutation) SetRash(i int) {
+	m.rash = &i
+	m.addrash = nil
+}
+
+// Rash returns the value of the "rash" field in the mutation.
+func (m *ChartMutation) Rash() (r int, exists bool) {
+	v := m.rash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRash returns the old "rash" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldRash(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRash: %w", err)
+	}
+	return oldValue.Rash, nil
+}
+
+// AddRash adds i to the "rash" field.
+func (m *ChartMutation) AddRash(i int) {
+	if m.addrash != nil {
+		*m.addrash += i
+	} else {
+		m.addrash = &i
+	}
+}
+
+// AddedRash returns the value that was added to the "rash" field in this mutation.
+func (m *ChartMutation) AddedRash() (r int, exists bool) {
+	v := m.addrash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRash resets all changes to the "rash" field.
+func (m *ChartMutation) ResetRash() {
+	m.rash = nil
+	m.addrash = nil
+}
+
+// SetSting sets the "sting" field.
+func (m *ChartMutation) SetSting(i int) {
+	m.sting = &i
+	m.addsting = nil
+}
+
+// Sting returns the value of the "sting" field in the mutation.
+func (m *ChartMutation) Sting() (r int, exists bool) {
+	v := m.sting
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSting returns the old "sting" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldSting(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldSting is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldSting requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSting: %w", err)
+	}
+	return oldValue.Sting, nil
+}
+
+// AddSting adds i to the "sting" field.
+func (m *ChartMutation) AddSting(i int) {
+	if m.addsting != nil {
+		*m.addsting += i
+	} else {
+		m.addsting = &i
+	}
+}
+
+// AddedSting returns the value that was added to the "sting" field in this mutation.
+func (m *ChartMutation) AddedSting() (r int, exists bool) {
+	v := m.addsting
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSting resets all changes to the "sting" field.
+func (m *ChartMutation) ResetSting() {
+	m.sting = nil
+	m.addsting = nil
+}
+
+// SetDyeWhen sets the "dye_when" field.
+func (m *ChartMutation) SetDyeWhen(i int) {
+	m.dye_when = &i
+	m.adddye_when = nil
+}
+
+// DyeWhen returns the value of the "dye_when" field in the mutation.
+func (m *ChartMutation) DyeWhen() (r int, exists bool) {
+	v := m.dye_when
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDyeWhen returns the old "dye_when" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldDyeWhen(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDyeWhen is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDyeWhen requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDyeWhen: %w", err)
+	}
+	return oldValue.DyeWhen, nil
+}
+
+// AddDyeWhen adds i to the "dye_when" field.
+func (m *ChartMutation) AddDyeWhen(i int) {
+	if m.adddye_when != nil {
+		*m.adddye_when += i
+	} else {
+		m.adddye_when = &i
+	}
+}
+
+// AddedDyeWhen returns the value that was added to the "dye_when" field in this mutation.
+func (m *ChartMutation) AddedDyeWhen() (r int, exists bool) {
+	v := m.adddye_when
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDyeWhen resets all changes to the "dye_when" field.
+func (m *ChartMutation) ResetDyeWhen() {
+	m.dye_when = nil
+	m.adddye_when = nil
+}
+
+// SetDyeWhere sets the "dye_where" field.
+func (m *ChartMutation) SetDyeWhere(i int) {
+	m.dye_where = &i
+	m.adddye_where = nil
+}
+
+// DyeWhere returns the value of the "dye_where" field in the mutation.
+func (m *ChartMutation) DyeWhere() (r int, exists bool) {
+	v := m.dye_where
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDyeWhere returns the old "dye_where" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldDyeWhere(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDyeWhere is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDyeWhere requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDyeWhere: %w", err)
+	}
+	return oldValue.DyeWhere, nil
+}
+
+// AddDyeWhere adds i to the "dye_where" field.
+func (m *ChartMutation) AddDyeWhere(i int) {
+	if m.adddye_where != nil {
+		*m.adddye_where += i
+	} else {
+		m.adddye_where = &i
+	}
+}
+
+// AddedDyeWhere returns the value that was added to the "dye_where" field in this mutation.
+func (m *ChartMutation) AddedDyeWhere() (r int, exists bool) {
+	v := m.adddye_where
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDyeWhere resets all changes to the "dye_where" field.
+func (m *ChartMutation) ResetDyeWhere() {
+	m.dye_where = nil
+	m.adddye_where = nil
+}
+
+// SetHenaWhen sets the "hena_when" field.
+func (m *ChartMutation) SetHenaWhen(i int) {
+	m.hena_when = &i
+	m.addhena_when = nil
+}
+
+// HenaWhen returns the value of the "hena_when" field in the mutation.
+func (m *ChartMutation) HenaWhen() (r int, exists bool) {
+	v := m.hena_when
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHenaWhen returns the old "hena_when" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldHenaWhen(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldHenaWhen is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldHenaWhen requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHenaWhen: %w", err)
+	}
+	return oldValue.HenaWhen, nil
+}
+
+// AddHenaWhen adds i to the "hena_when" field.
+func (m *ChartMutation) AddHenaWhen(i int) {
+	if m.addhena_when != nil {
+		*m.addhena_when += i
+	} else {
+		m.addhena_when = &i
+	}
+}
+
+// AddedHenaWhen returns the value that was added to the "hena_when" field in this mutation.
+func (m *ChartMutation) AddedHenaWhen() (r int, exists bool) {
+	v := m.addhena_when
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetHenaWhen resets all changes to the "hena_when" field.
+func (m *ChartMutation) ResetHenaWhen() {
+	m.hena_when = nil
+	m.addhena_when = nil
+}
+
+// SetRebondedWhen sets the "rebonded_when" field.
+func (m *ChartMutation) SetRebondedWhen(i int) {
+	m.rebonded_when = &i
+	m.addrebonded_when = nil
+}
+
+// RebondedWhen returns the value of the "rebonded_when" field in the mutation.
+func (m *ChartMutation) RebondedWhen() (r int, exists bool) {
+	v := m.rebonded_when
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRebondedWhen returns the old "rebonded_when" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldRebondedWhen(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRebondedWhen is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRebondedWhen requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRebondedWhen: %w", err)
+	}
+	return oldValue.RebondedWhen, nil
+}
+
+// AddRebondedWhen adds i to the "rebonded_when" field.
+func (m *ChartMutation) AddRebondedWhen(i int) {
+	if m.addrebonded_when != nil {
+		*m.addrebonded_when += i
+	} else {
+		m.addrebonded_when = &i
+	}
+}
+
+// AddedRebondedWhen returns the value that was added to the "rebonded_when" field in this mutation.
+func (m *ChartMutation) AddedRebondedWhen() (r int, exists bool) {
+	v := m.addrebonded_when
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRebondedWhen resets all changes to the "rebonded_when" field.
+func (m *ChartMutation) ResetRebondedWhen() {
+	m.rebonded_when = nil
+	m.addrebonded_when = nil
+}
+
+// SetManicureWhen sets the "manicure_when" field.
+func (m *ChartMutation) SetManicureWhen(i int) {
+	m.manicure_when = &i
+	m.addmanicure_when = nil
+}
+
+// ManicureWhen returns the value of the "manicure_when" field in the mutation.
+func (m *ChartMutation) ManicureWhen() (r int, exists bool) {
+	v := m.manicure_when
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldManicureWhen returns the old "manicure_when" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldManicureWhen(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldManicureWhen is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldManicureWhen requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldManicureWhen: %w", err)
+	}
+	return oldValue.ManicureWhen, nil
+}
+
+// AddManicureWhen adds i to the "manicure_when" field.
+func (m *ChartMutation) AddManicureWhen(i int) {
+	if m.addmanicure_when != nil {
+		*m.addmanicure_when += i
+	} else {
+		m.addmanicure_when = &i
+	}
+}
+
+// AddedManicureWhen returns the value that was added to the "manicure_when" field in this mutation.
+func (m *ChartMutation) AddedManicureWhen() (r int, exists bool) {
+	v := m.addmanicure_when
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetManicureWhen resets all changes to the "manicure_when" field.
+func (m *ChartMutation) ResetManicureWhen() {
+	m.manicure_when = nil
+	m.addmanicure_when = nil
+}
+
+// SetPermWhen sets the "perm_when" field.
+func (m *ChartMutation) SetPermWhen(i int) {
+	m.perm_when = &i
+	m.addperm_when = nil
+}
+
+// PermWhen returns the value of the "perm_when" field in the mutation.
+func (m *ChartMutation) PermWhen() (r int, exists bool) {
+	v := m.perm_when
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPermWhen returns the old "perm_when" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldPermWhen(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPermWhen is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPermWhen requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPermWhen: %w", err)
+	}
+	return oldValue.PermWhen, nil
+}
+
+// AddPermWhen adds i to the "perm_when" field.
+func (m *ChartMutation) AddPermWhen(i int) {
+	if m.addperm_when != nil {
+		*m.addperm_when += i
+	} else {
+		m.addperm_when = &i
+	}
+}
+
+// AddedPermWhen returns the value that was added to the "perm_when" field in this mutation.
+func (m *ChartMutation) AddedPermWhen() (r int, exists bool) {
+	v := m.addperm_when
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPermWhen resets all changes to the "perm_when" field.
+func (m *ChartMutation) ResetPermWhen() {
+	m.perm_when = nil
+	m.addperm_when = nil
+}
+
+// SetTreatmentWhen sets the "treatment_when" field.
+func (m *ChartMutation) SetTreatmentWhen(i int) {
+	m.treatment_when = &i
+	m.addtreatment_when = nil
+}
+
+// TreatmentWhen returns the value of the "treatment_when" field in the mutation.
+func (m *ChartMutation) TreatmentWhen() (r int, exists bool) {
+	v := m.treatment_when
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTreatmentWhen returns the old "treatment_when" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldTreatmentWhen(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTreatmentWhen is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTreatmentWhen requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTreatmentWhen: %w", err)
+	}
+	return oldValue.TreatmentWhen, nil
+}
+
+// AddTreatmentWhen adds i to the "treatment_when" field.
+func (m *ChartMutation) AddTreatmentWhen(i int) {
+	if m.addtreatment_when != nil {
+		*m.addtreatment_when += i
+	} else {
+		m.addtreatment_when = &i
+	}
+}
+
+// AddedTreatmentWhen returns the value that was added to the "treatment_when" field in this mutation.
+func (m *ChartMutation) AddedTreatmentWhen() (r int, exists bool) {
+	v := m.addtreatment_when
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTreatmentWhen resets all changes to the "treatment_when" field.
+func (m *ChartMutation) ResetTreatmentWhen() {
+	m.treatment_when = nil
+	m.addtreatment_when = nil
+}
+
+// SetNoticeReason sets the "notice_reason" field.
+func (m *ChartMutation) SetNoticeReason(i int) {
+	m.notice_reason = &i
+	m.addnotice_reason = nil
+}
+
+// NoticeReason returns the value of the "notice_reason" field in the mutation.
+func (m *ChartMutation) NoticeReason() (r int, exists bool) {
+	v := m.notice_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNoticeReason returns the old "notice_reason" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldNoticeReason(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldNoticeReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldNoticeReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNoticeReason: %w", err)
+	}
+	return oldValue.NoticeReason, nil
+}
+
+// AddNoticeReason adds i to the "notice_reason" field.
+func (m *ChartMutation) AddNoticeReason(i int) {
+	if m.addnotice_reason != nil {
+		*m.addnotice_reason += i
+	} else {
+		m.addnotice_reason = &i
+	}
+}
+
+// AddedNoticeReason returns the value that was added to the "notice_reason" field in this mutation.
+func (m *ChartMutation) AddedNoticeReason() (r int, exists bool) {
+	v := m.addnotice_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetNoticeReason resets all changes to the "notice_reason" field.
+func (m *ChartMutation) ResetNoticeReason() {
+	m.notice_reason = nil
+	m.addnotice_reason = nil
+}
+
+// SetLastName sets the "last_name" field.
+func (m *ChartMutation) SetLastName(s string) {
+	m.last_name = &s
+}
+
+// LastName returns the value of the "last_name" field in the mutation.
+func (m *ChartMutation) LastName() (r string, exists bool) {
+	v := m.last_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastName returns the old "last_name" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldLastName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldLastName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldLastName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastName: %w", err)
+	}
+	return oldValue.LastName, nil
+}
+
+// ResetLastName resets all changes to the "last_name" field.
+func (m *ChartMutation) ResetLastName() {
+	m.last_name = nil
+}
+
+// SetFirstName sets the "first_name" field.
+func (m *ChartMutation) SetFirstName(s string) {
+	m.first_name = &s
+}
+
+// FirstName returns the value of the "first_name" field in the mutation.
+func (m *ChartMutation) FirstName() (r string, exists bool) {
+	v := m.first_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFirstName returns the old "first_name" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldFirstName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldFirstName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldFirstName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFirstName: %w", err)
+	}
+	return oldValue.FirstName, nil
+}
+
+// ResetFirstName resets all changes to the "first_name" field.
+func (m *ChartMutation) ResetFirstName() {
+	m.first_name = nil
+}
+
+// SetLastNameHiragana sets the "last_name_hiragana" field.
+func (m *ChartMutation) SetLastNameHiragana(s string) {
+	m.last_name_hiragana = &s
+}
+
+// LastNameHiragana returns the value of the "last_name_hiragana" field in the mutation.
+func (m *ChartMutation) LastNameHiragana() (r string, exists bool) {
+	v := m.last_name_hiragana
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastNameHiragana returns the old "last_name_hiragana" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldLastNameHiragana(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldLastNameHiragana is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldLastNameHiragana requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastNameHiragana: %w", err)
+	}
+	return oldValue.LastNameHiragana, nil
+}
+
+// ResetLastNameHiragana resets all changes to the "last_name_hiragana" field.
+func (m *ChartMutation) ResetLastNameHiragana() {
+	m.last_name_hiragana = nil
+}
+
+// SetFirstNameHiragana sets the "first_name_hiragana" field.
+func (m *ChartMutation) SetFirstNameHiragana(s string) {
+	m.first_name_hiragana = &s
+}
+
+// FirstNameHiragana returns the value of the "first_name_hiragana" field in the mutation.
+func (m *ChartMutation) FirstNameHiragana() (r string, exists bool) {
+	v := m.first_name_hiragana
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFirstNameHiragana returns the old "first_name_hiragana" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldFirstNameHiragana(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldFirstNameHiragana is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldFirstNameHiragana requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFirstNameHiragana: %w", err)
+	}
+	return oldValue.FirstNameHiragana, nil
+}
+
+// ResetFirstNameHiragana resets all changes to the "first_name_hiragana" field.
+func (m *ChartMutation) ResetFirstNameHiragana() {
+	m.first_name_hiragana = nil
+}
+
+// SetPostalCode sets the "postal_code" field.
+func (m *ChartMutation) SetPostalCode(s string) {
+	m.postal_code = &s
+}
+
+// PostalCode returns the value of the "postal_code" field in the mutation.
+func (m *ChartMutation) PostalCode() (r string, exists bool) {
+	v := m.postal_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPostalCode returns the old "postal_code" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldPostalCode(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPostalCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPostalCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPostalCode: %w", err)
+	}
+	return oldValue.PostalCode, nil
+}
+
+// ResetPostalCode resets all changes to the "postal_code" field.
+func (m *ChartMutation) ResetPostalCode() {
+	m.postal_code = nil
+}
+
+// SetPrefectureID sets the "prefecture_id" field.
+func (m *ChartMutation) SetPrefectureID(i int) {
+	m.prefecture_id = &i
+	m.addprefecture_id = nil
+}
+
+// PrefectureID returns the value of the "prefecture_id" field in the mutation.
+func (m *ChartMutation) PrefectureID() (r int, exists bool) {
+	v := m.prefecture_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrefectureID returns the old "prefecture_id" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldPrefectureID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPrefectureID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPrefectureID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrefectureID: %w", err)
+	}
+	return oldValue.PrefectureID, nil
+}
+
+// AddPrefectureID adds i to the "prefecture_id" field.
+func (m *ChartMutation) AddPrefectureID(i int) {
+	if m.addprefecture_id != nil {
+		*m.addprefecture_id += i
+	} else {
+		m.addprefecture_id = &i
+	}
+}
+
+// AddedPrefectureID returns the value that was added to the "prefecture_id" field in this mutation.
+func (m *ChartMutation) AddedPrefectureID() (r int, exists bool) {
+	v := m.addprefecture_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPrefectureID resets all changes to the "prefecture_id" field.
+func (m *ChartMutation) ResetPrefectureID() {
+	m.prefecture_id = nil
+	m.addprefecture_id = nil
+}
+
+// SetAddress sets the "address" field.
+func (m *ChartMutation) SetAddress(s string) {
+	m.address = &s
+}
+
+// Address returns the value of the "address" field in the mutation.
+func (m *ChartMutation) Address() (r string, exists bool) {
+	v := m.address
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddress returns the old "address" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldAddress(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAddress is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAddress requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddress: %w", err)
+	}
+	return oldValue.Address, nil
+}
+
+// ResetAddress resets all changes to the "address" field.
+func (m *ChartMutation) ResetAddress() {
+	m.address = nil
+}
+
+// SetTel sets the "tel" field.
+func (m *ChartMutation) SetTel(s string) {
+	m.tel = &s
+}
+
+// Tel returns the value of the "tel" field in the mutation.
+func (m *ChartMutation) Tel() (r string, exists bool) {
+	v := m.tel
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTel returns the old "tel" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldTel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTel: %w", err)
+	}
+	return oldValue.Tel, nil
+}
+
+// ResetTel resets all changes to the "tel" field.
+func (m *ChartMutation) ResetTel() {
+	m.tel = nil
+}
+
+// SetEmail sets the "email" field.
+func (m *ChartMutation) SetEmail(s string) {
+	m.email = &s
+}
+
+// Email returns the value of the "email" field in the mutation.
+func (m *ChartMutation) Email() (r string, exists bool) {
+	v := m.email
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmail returns the old "email" field's value of the Chart entity.
+// If the Chart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChartMutation) OldEmail(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldEmail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldEmail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmail: %w", err)
+	}
+	return oldValue.Email, nil
+}
+
+// ResetEmail resets all changes to the "email" field.
+func (m *ChartMutation) ResetEmail() {
+	m.email = nil
+}
+
+// Where appends a list predicates to the ChartMutation builder.
+func (m *ChartMutation) Where(ps ...predicate.Chart) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ChartMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Chart).
+func (m *ChartMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ChartMutation) Fields() []string {
+	fields := make([]string, 0, 25)
+	if m.create_time != nil {
+		fields = append(fields, chart.FieldCreateTime)
+	}
+	if m.update_time != nil {
+		fields = append(fields, chart.FieldUpdateTime)
+	}
+	if m.patch != nil {
+		fields = append(fields, chart.FieldPatch)
+	}
+	if m.generation != nil {
+		fields = append(fields, chart.FieldGeneration)
+	}
+	if m.gender != nil {
+		fields = append(fields, chart.FieldGender)
+	}
+	if m.allergy != nil {
+		fields = append(fields, chart.FieldAllergy)
+	}
+	if m.rash != nil {
+		fields = append(fields, chart.FieldRash)
+	}
+	if m.sting != nil {
+		fields = append(fields, chart.FieldSting)
+	}
+	if m.dye_when != nil {
+		fields = append(fields, chart.FieldDyeWhen)
+	}
+	if m.dye_where != nil {
+		fields = append(fields, chart.FieldDyeWhere)
+	}
+	if m.hena_when != nil {
+		fields = append(fields, chart.FieldHenaWhen)
+	}
+	if m.rebonded_when != nil {
+		fields = append(fields, chart.FieldRebondedWhen)
+	}
+	if m.manicure_when != nil {
+		fields = append(fields, chart.FieldManicureWhen)
+	}
+	if m.perm_when != nil {
+		fields = append(fields, chart.FieldPermWhen)
+	}
+	if m.treatment_when != nil {
+		fields = append(fields, chart.FieldTreatmentWhen)
+	}
+	if m.notice_reason != nil {
+		fields = append(fields, chart.FieldNoticeReason)
+	}
+	if m.last_name != nil {
+		fields = append(fields, chart.FieldLastName)
+	}
+	if m.first_name != nil {
+		fields = append(fields, chart.FieldFirstName)
+	}
+	if m.last_name_hiragana != nil {
+		fields = append(fields, chart.FieldLastNameHiragana)
+	}
+	if m.first_name_hiragana != nil {
+		fields = append(fields, chart.FieldFirstNameHiragana)
+	}
+	if m.postal_code != nil {
+		fields = append(fields, chart.FieldPostalCode)
+	}
+	if m.prefecture_id != nil {
+		fields = append(fields, chart.FieldPrefectureID)
+	}
+	if m.address != nil {
+		fields = append(fields, chart.FieldAddress)
+	}
+	if m.tel != nil {
+		fields = append(fields, chart.FieldTel)
+	}
+	if m.email != nil {
+		fields = append(fields, chart.FieldEmail)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ChartMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case chart.FieldCreateTime:
+		return m.CreateTime()
+	case chart.FieldUpdateTime:
+		return m.UpdateTime()
+	case chart.FieldPatch:
+		return m.Patch()
+	case chart.FieldGeneration:
+		return m.Generation()
+	case chart.FieldGender:
+		return m.Gender()
+	case chart.FieldAllergy:
+		return m.Allergy()
+	case chart.FieldRash:
+		return m.Rash()
+	case chart.FieldSting:
+		return m.Sting()
+	case chart.FieldDyeWhen:
+		return m.DyeWhen()
+	case chart.FieldDyeWhere:
+		return m.DyeWhere()
+	case chart.FieldHenaWhen:
+		return m.HenaWhen()
+	case chart.FieldRebondedWhen:
+		return m.RebondedWhen()
+	case chart.FieldManicureWhen:
+		return m.ManicureWhen()
+	case chart.FieldPermWhen:
+		return m.PermWhen()
+	case chart.FieldTreatmentWhen:
+		return m.TreatmentWhen()
+	case chart.FieldNoticeReason:
+		return m.NoticeReason()
+	case chart.FieldLastName:
+		return m.LastName()
+	case chart.FieldFirstName:
+		return m.FirstName()
+	case chart.FieldLastNameHiragana:
+		return m.LastNameHiragana()
+	case chart.FieldFirstNameHiragana:
+		return m.FirstNameHiragana()
+	case chart.FieldPostalCode:
+		return m.PostalCode()
+	case chart.FieldPrefectureID:
+		return m.PrefectureID()
+	case chart.FieldAddress:
+		return m.Address()
+	case chart.FieldTel:
+		return m.Tel()
+	case chart.FieldEmail:
+		return m.Email()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ChartMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case chart.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case chart.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
+	case chart.FieldPatch:
+		return m.OldPatch(ctx)
+	case chart.FieldGeneration:
+		return m.OldGeneration(ctx)
+	case chart.FieldGender:
+		return m.OldGender(ctx)
+	case chart.FieldAllergy:
+		return m.OldAllergy(ctx)
+	case chart.FieldRash:
+		return m.OldRash(ctx)
+	case chart.FieldSting:
+		return m.OldSting(ctx)
+	case chart.FieldDyeWhen:
+		return m.OldDyeWhen(ctx)
+	case chart.FieldDyeWhere:
+		return m.OldDyeWhere(ctx)
+	case chart.FieldHenaWhen:
+		return m.OldHenaWhen(ctx)
+	case chart.FieldRebondedWhen:
+		return m.OldRebondedWhen(ctx)
+	case chart.FieldManicureWhen:
+		return m.OldManicureWhen(ctx)
+	case chart.FieldPermWhen:
+		return m.OldPermWhen(ctx)
+	case chart.FieldTreatmentWhen:
+		return m.OldTreatmentWhen(ctx)
+	case chart.FieldNoticeReason:
+		return m.OldNoticeReason(ctx)
+	case chart.FieldLastName:
+		return m.OldLastName(ctx)
+	case chart.FieldFirstName:
+		return m.OldFirstName(ctx)
+	case chart.FieldLastNameHiragana:
+		return m.OldLastNameHiragana(ctx)
+	case chart.FieldFirstNameHiragana:
+		return m.OldFirstNameHiragana(ctx)
+	case chart.FieldPostalCode:
+		return m.OldPostalCode(ctx)
+	case chart.FieldPrefectureID:
+		return m.OldPrefectureID(ctx)
+	case chart.FieldAddress:
+		return m.OldAddress(ctx)
+	case chart.FieldTel:
+		return m.OldTel(ctx)
+	case chart.FieldEmail:
+		return m.OldEmail(ctx)
+	}
+	return nil, fmt.Errorf("unknown Chart field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ChartMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case chart.FieldCreateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case chart.FieldUpdateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateTime(v)
+		return nil
+	case chart.FieldPatch:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPatch(v)
+		return nil
+	case chart.FieldGeneration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGeneration(v)
+		return nil
+	case chart.FieldGender:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGender(v)
+		return nil
+	case chart.FieldAllergy:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAllergy(v)
+		return nil
+	case chart.FieldRash:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRash(v)
+		return nil
+	case chart.FieldSting:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSting(v)
+		return nil
+	case chart.FieldDyeWhen:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDyeWhen(v)
+		return nil
+	case chart.FieldDyeWhere:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDyeWhere(v)
+		return nil
+	case chart.FieldHenaWhen:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHenaWhen(v)
+		return nil
+	case chart.FieldRebondedWhen:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRebondedWhen(v)
+		return nil
+	case chart.FieldManicureWhen:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetManicureWhen(v)
+		return nil
+	case chart.FieldPermWhen:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPermWhen(v)
+		return nil
+	case chart.FieldTreatmentWhen:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTreatmentWhen(v)
+		return nil
+	case chart.FieldNoticeReason:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNoticeReason(v)
+		return nil
+	case chart.FieldLastName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastName(v)
+		return nil
+	case chart.FieldFirstName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFirstName(v)
+		return nil
+	case chart.FieldLastNameHiragana:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastNameHiragana(v)
+		return nil
+	case chart.FieldFirstNameHiragana:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFirstNameHiragana(v)
+		return nil
+	case chart.FieldPostalCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPostalCode(v)
+		return nil
+	case chart.FieldPrefectureID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrefectureID(v)
+		return nil
+	case chart.FieldAddress:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddress(v)
+		return nil
+	case chart.FieldTel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTel(v)
+		return nil
+	case chart.FieldEmail:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmail(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Chart field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ChartMutation) AddedFields() []string {
+	var fields []string
+	if m.addgeneration != nil {
+		fields = append(fields, chart.FieldGeneration)
+	}
+	if m.addgender != nil {
+		fields = append(fields, chart.FieldGender)
+	}
+	if m.addallergy != nil {
+		fields = append(fields, chart.FieldAllergy)
+	}
+	if m.addrash != nil {
+		fields = append(fields, chart.FieldRash)
+	}
+	if m.addsting != nil {
+		fields = append(fields, chart.FieldSting)
+	}
+	if m.adddye_when != nil {
+		fields = append(fields, chart.FieldDyeWhen)
+	}
+	if m.adddye_where != nil {
+		fields = append(fields, chart.FieldDyeWhere)
+	}
+	if m.addhena_when != nil {
+		fields = append(fields, chart.FieldHenaWhen)
+	}
+	if m.addrebonded_when != nil {
+		fields = append(fields, chart.FieldRebondedWhen)
+	}
+	if m.addmanicure_when != nil {
+		fields = append(fields, chart.FieldManicureWhen)
+	}
+	if m.addperm_when != nil {
+		fields = append(fields, chart.FieldPermWhen)
+	}
+	if m.addtreatment_when != nil {
+		fields = append(fields, chart.FieldTreatmentWhen)
+	}
+	if m.addnotice_reason != nil {
+		fields = append(fields, chart.FieldNoticeReason)
+	}
+	if m.addprefecture_id != nil {
+		fields = append(fields, chart.FieldPrefectureID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ChartMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case chart.FieldGeneration:
+		return m.AddedGeneration()
+	case chart.FieldGender:
+		return m.AddedGender()
+	case chart.FieldAllergy:
+		return m.AddedAllergy()
+	case chart.FieldRash:
+		return m.AddedRash()
+	case chart.FieldSting:
+		return m.AddedSting()
+	case chart.FieldDyeWhen:
+		return m.AddedDyeWhen()
+	case chart.FieldDyeWhere:
+		return m.AddedDyeWhere()
+	case chart.FieldHenaWhen:
+		return m.AddedHenaWhen()
+	case chart.FieldRebondedWhen:
+		return m.AddedRebondedWhen()
+	case chart.FieldManicureWhen:
+		return m.AddedManicureWhen()
+	case chart.FieldPermWhen:
+		return m.AddedPermWhen()
+	case chart.FieldTreatmentWhen:
+		return m.AddedTreatmentWhen()
+	case chart.FieldNoticeReason:
+		return m.AddedNoticeReason()
+	case chart.FieldPrefectureID:
+		return m.AddedPrefectureID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ChartMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case chart.FieldGeneration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddGeneration(v)
+		return nil
+	case chart.FieldGender:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddGender(v)
+		return nil
+	case chart.FieldAllergy:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAllergy(v)
+		return nil
+	case chart.FieldRash:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRash(v)
+		return nil
+	case chart.FieldSting:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSting(v)
+		return nil
+	case chart.FieldDyeWhen:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDyeWhen(v)
+		return nil
+	case chart.FieldDyeWhere:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDyeWhere(v)
+		return nil
+	case chart.FieldHenaWhen:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddHenaWhen(v)
+		return nil
+	case chart.FieldRebondedWhen:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRebondedWhen(v)
+		return nil
+	case chart.FieldManicureWhen:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddManicureWhen(v)
+		return nil
+	case chart.FieldPermWhen:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPermWhen(v)
+		return nil
+	case chart.FieldTreatmentWhen:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTreatmentWhen(v)
+		return nil
+	case chart.FieldNoticeReason:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddNoticeReason(v)
+		return nil
+	case chart.FieldPrefectureID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPrefectureID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Chart numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ChartMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ChartMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ChartMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Chart nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ChartMutation) ResetField(name string) error {
+	switch name {
+	case chart.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case chart.FieldUpdateTime:
+		m.ResetUpdateTime()
+		return nil
+	case chart.FieldPatch:
+		m.ResetPatch()
+		return nil
+	case chart.FieldGeneration:
+		m.ResetGeneration()
+		return nil
+	case chart.FieldGender:
+		m.ResetGender()
+		return nil
+	case chart.FieldAllergy:
+		m.ResetAllergy()
+		return nil
+	case chart.FieldRash:
+		m.ResetRash()
+		return nil
+	case chart.FieldSting:
+		m.ResetSting()
+		return nil
+	case chart.FieldDyeWhen:
+		m.ResetDyeWhen()
+		return nil
+	case chart.FieldDyeWhere:
+		m.ResetDyeWhere()
+		return nil
+	case chart.FieldHenaWhen:
+		m.ResetHenaWhen()
+		return nil
+	case chart.FieldRebondedWhen:
+		m.ResetRebondedWhen()
+		return nil
+	case chart.FieldManicureWhen:
+		m.ResetManicureWhen()
+		return nil
+	case chart.FieldPermWhen:
+		m.ResetPermWhen()
+		return nil
+	case chart.FieldTreatmentWhen:
+		m.ResetTreatmentWhen()
+		return nil
+	case chart.FieldNoticeReason:
+		m.ResetNoticeReason()
+		return nil
+	case chart.FieldLastName:
+		m.ResetLastName()
+		return nil
+	case chart.FieldFirstName:
+		m.ResetFirstName()
+		return nil
+	case chart.FieldLastNameHiragana:
+		m.ResetLastNameHiragana()
+		return nil
+	case chart.FieldFirstNameHiragana:
+		m.ResetFirstNameHiragana()
+		return nil
+	case chart.FieldPostalCode:
+		m.ResetPostalCode()
+		return nil
+	case chart.FieldPrefectureID:
+		m.ResetPrefectureID()
+		return nil
+	case chart.FieldAddress:
+		m.ResetAddress()
+		return nil
+	case chart.FieldTel:
+		m.ResetTel()
+		return nil
+	case chart.FieldEmail:
+		m.ResetEmail()
+		return nil
+	}
+	return fmt.Errorf("unknown Chart field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ChartMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ChartMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ChartMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ChartMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ChartMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ChartMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ChartMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Chart unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ChartMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Chart edge %s", name)
+}
 
 // TodoMutation represents an operation that mutates the Todo nodes in the graph.
 type TodoMutation struct {

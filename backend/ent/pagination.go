@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/errcode"
+	"github.com/ta-toshio/bherb/ent/chart"
 	"github.com/ta-toshio/bherb/ent/todo"
 	"github.com/ta-toshio/bherb/ent/user"
 	"github.com/vektah/gqlparser/v2/gqlerror"
@@ -232,6 +233,290 @@ const (
 	pageInfoField   = "pageInfo"
 	totalCountField = "totalCount"
 )
+
+// ChartEdge is the edge representation of Chart.
+type ChartEdge struct {
+	Node   *Chart `json:"node"`
+	Cursor Cursor `json:"cursor"`
+}
+
+// ChartConnection is the connection containing edges to Chart.
+type ChartConnection struct {
+	Edges      []*ChartEdge `json:"edges"`
+	PageInfo   PageInfo     `json:"pageInfo"`
+	TotalCount int          `json:"totalCount"`
+}
+
+// ChartPaginateOption enables pagination customization.
+type ChartPaginateOption func(*chartPager) error
+
+// WithChartOrder configures pagination ordering.
+func WithChartOrder(order *ChartOrder) ChartPaginateOption {
+	if order == nil {
+		order = DefaultChartOrder
+	}
+	o := *order
+	return func(pager *chartPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultChartOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithChartFilter configures pagination filter.
+func WithChartFilter(filter func(*ChartQuery) (*ChartQuery, error)) ChartPaginateOption {
+	return func(pager *chartPager) error {
+		if filter == nil {
+			return errors.New("ChartQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type chartPager struct {
+	order  *ChartOrder
+	filter func(*ChartQuery) (*ChartQuery, error)
+}
+
+func newChartPager(opts []ChartPaginateOption) (*chartPager, error) {
+	pager := &chartPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultChartOrder
+	}
+	return pager, nil
+}
+
+func (p *chartPager) applyFilter(query *ChartQuery) (*ChartQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *chartPager) toCursor(c *Chart) Cursor {
+	return p.order.Field.toCursor(c)
+}
+
+func (p *chartPager) applyCursors(query *ChartQuery, after, before *Cursor) *ChartQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultChartOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *chartPager) applyOrder(query *ChartQuery, reverse bool) *ChartQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultChartOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultChartOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Chart.
+func (c *ChartQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...ChartPaginateOption,
+) (*ChartConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newChartPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if c, err = pager.applyFilter(c); err != nil {
+		return nil, err
+	}
+
+	conn := &ChartConnection{Edges: []*ChartEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := c.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := c.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	c = pager.applyCursors(c, after, before)
+	c = pager.applyOrder(c, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		c = c.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		c = c.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := c.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *Chart
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Chart {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Chart {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*ChartEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &ChartEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+var (
+	// ChartOrderFieldLastNameHiragana orders Chart by last_name_hiragana.
+	ChartOrderFieldLastNameHiragana = &ChartOrderField{
+		field: chart.FieldLastNameHiragana,
+		toCursor: func(c *Chart) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.LastNameHiragana,
+			}
+		},
+	}
+	// ChartOrderFieldFirstNameHiragana orders Chart by first_name_hiragana.
+	ChartOrderFieldFirstNameHiragana = &ChartOrderField{
+		field: chart.FieldFirstNameHiragana,
+		toCursor: func(c *Chart) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.FirstNameHiragana,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f ChartOrderField) String() string {
+	var str string
+	switch f.field {
+	case chart.FieldLastNameHiragana:
+		str = "LAST_NAME_HIRAGANA"
+	case chart.FieldFirstNameHiragana:
+		str = "FIRST_NAME_HIRAGANA"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f ChartOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *ChartOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("ChartOrderField %T must be a string", v)
+	}
+	switch str {
+	case "LAST_NAME_HIRAGANA":
+		*f = *ChartOrderFieldLastNameHiragana
+	case "FIRST_NAME_HIRAGANA":
+		*f = *ChartOrderFieldFirstNameHiragana
+	default:
+		return fmt.Errorf("%s is not a valid ChartOrderField", str)
+	}
+	return nil
+}
+
+// ChartOrderField defines the ordering field of Chart.
+type ChartOrderField struct {
+	field    string
+	toCursor func(*Chart) Cursor
+}
+
+// ChartOrder defines the ordering of Chart.
+type ChartOrder struct {
+	Direction OrderDirection   `json:"direction"`
+	Field     *ChartOrderField `json:"field"`
+}
+
+// DefaultChartOrder is the default ordering of Chart.
+var DefaultChartOrder = &ChartOrder{
+	Direction: OrderDirectionAsc,
+	Field: &ChartOrderField{
+		field: chart.FieldID,
+		toCursor: func(c *Chart) Cursor {
+			return Cursor{ID: c.ID}
+		},
+	},
+}
+
+// ToEdge converts Chart into ChartEdge.
+func (c *Chart) ToEdge(order *ChartOrder) *ChartEdge {
+	if order == nil {
+		order = DefaultChartOrder
+	}
+	return &ChartEdge{
+		Node:   c,
+		Cursor: order.Field.toCursor(c),
+	}
+}
 
 // TodoEdge is the edge representation of Todo.
 type TodoEdge struct {

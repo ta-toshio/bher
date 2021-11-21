@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-
 	"github.com/ta-toshio/bherb/ent"
 	"github.com/ta-toshio/bherb/ent/todo"
 	"github.com/ta-toshio/bherb/graph/generated"
@@ -28,6 +27,13 @@ func (r *mutationResolver) UpdateTodos(ctx context.Context, ids []int, input ent
 		return nil, err
 	}
 	return client.Todo.Query().Where(todo.IDIn(ids...)).All(ctx)
+}
+
+func (r *mutationResolver) CreateChart(ctx context.Context, input ent.CreateChartInput) (*ent.Chart, error) {
+	return ent.FromContext(ctx).Chart.
+		Create().
+		SetInput(input).
+		Save(ctx)
 }
 
 func (r *queryResolver) Todos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) (*ent.TodoConnection, error) {

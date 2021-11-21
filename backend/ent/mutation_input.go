@@ -8,6 +8,216 @@ import (
 	"github.com/ta-toshio/bherb/ent/todo"
 )
 
+// CreateChartInput represents a mutation input for creating charts.
+type CreateChartInput struct {
+	CreateTime        *time.Time
+	UpdateTime        *time.Time
+	Patch             *bool
+	Generation        *int
+	Gender            *int
+	Allergy           *int
+	Rash              *int
+	Sting             *int
+	DyeWhen           *int
+	DyeWhere          *int
+	HenaWhen          *int
+	RebondedWhen      *int
+	ManicureWhen      *int
+	PermWhen          *int
+	TreatmentWhen     *int
+	NoticeReason      *int
+	LastName          string
+	FirstName         string
+	LastNameHiragana  string
+	FirstNameHiragana string
+	PostalCode        string
+	PrefectureID      *int
+	Address           string
+	Tel               string
+	Email             string
+}
+
+// Mutate applies the CreateChartInput on the ChartCreate builder.
+func (i *CreateChartInput) Mutate(m *ChartCreate) {
+	if v := i.CreateTime; v != nil {
+		m.SetCreateTime(*v)
+	}
+	if v := i.UpdateTime; v != nil {
+		m.SetUpdateTime(*v)
+	}
+	if v := i.Patch; v != nil {
+		m.SetPatch(*v)
+	}
+	if v := i.Generation; v != nil {
+		m.SetGeneration(*v)
+	}
+	if v := i.Gender; v != nil {
+		m.SetGender(*v)
+	}
+	if v := i.Allergy; v != nil {
+		m.SetAllergy(*v)
+	}
+	if v := i.Rash; v != nil {
+		m.SetRash(*v)
+	}
+	if v := i.Sting; v != nil {
+		m.SetSting(*v)
+	}
+	if v := i.DyeWhen; v != nil {
+		m.SetDyeWhen(*v)
+	}
+	if v := i.DyeWhere; v != nil {
+		m.SetDyeWhere(*v)
+	}
+	if v := i.HenaWhen; v != nil {
+		m.SetHenaWhen(*v)
+	}
+	if v := i.RebondedWhen; v != nil {
+		m.SetRebondedWhen(*v)
+	}
+	if v := i.ManicureWhen; v != nil {
+		m.SetManicureWhen(*v)
+	}
+	if v := i.PermWhen; v != nil {
+		m.SetPermWhen(*v)
+	}
+	if v := i.TreatmentWhen; v != nil {
+		m.SetTreatmentWhen(*v)
+	}
+	if v := i.NoticeReason; v != nil {
+		m.SetNoticeReason(*v)
+	}
+	m.SetLastName(i.LastName)
+	m.SetFirstName(i.FirstName)
+	m.SetLastNameHiragana(i.LastNameHiragana)
+	m.SetFirstNameHiragana(i.FirstNameHiragana)
+	m.SetPostalCode(i.PostalCode)
+	if v := i.PrefectureID; v != nil {
+		m.SetPrefectureID(*v)
+	}
+	m.SetAddress(i.Address)
+	m.SetTel(i.Tel)
+	m.SetEmail(i.Email)
+}
+
+// SetInput applies the change-set in the CreateChartInput on the create builder.
+func (c *ChartCreate) SetInput(i CreateChartInput) *ChartCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateChartInput represents a mutation input for updating charts.
+type UpdateChartInput struct {
+	Patch             *bool
+	Generation        *int
+	Gender            *int
+	Allergy           *int
+	Rash              *int
+	Sting             *int
+	DyeWhen           *int
+	DyeWhere          *int
+	HenaWhen          *int
+	RebondedWhen      *int
+	ManicureWhen      *int
+	PermWhen          *int
+	TreatmentWhen     *int
+	NoticeReason      *int
+	LastName          *string
+	FirstName         *string
+	LastNameHiragana  *string
+	FirstNameHiragana *string
+	PostalCode        *string
+	PrefectureID      *int
+	Address           *string
+	Tel               *string
+	Email             *string
+}
+
+// Mutate applies the UpdateChartInput on the ChartMutation.
+func (i *UpdateChartInput) Mutate(m *ChartMutation) {
+	if v := i.Patch; v != nil {
+		m.SetPatch(*v)
+	}
+	if v := i.Generation; v != nil {
+		m.SetGeneration(*v)
+	}
+	if v := i.Gender; v != nil {
+		m.SetGender(*v)
+	}
+	if v := i.Allergy; v != nil {
+		m.SetAllergy(*v)
+	}
+	if v := i.Rash; v != nil {
+		m.SetRash(*v)
+	}
+	if v := i.Sting; v != nil {
+		m.SetSting(*v)
+	}
+	if v := i.DyeWhen; v != nil {
+		m.SetDyeWhen(*v)
+	}
+	if v := i.DyeWhere; v != nil {
+		m.SetDyeWhere(*v)
+	}
+	if v := i.HenaWhen; v != nil {
+		m.SetHenaWhen(*v)
+	}
+	if v := i.RebondedWhen; v != nil {
+		m.SetRebondedWhen(*v)
+	}
+	if v := i.ManicureWhen; v != nil {
+		m.SetManicureWhen(*v)
+	}
+	if v := i.PermWhen; v != nil {
+		m.SetPermWhen(*v)
+	}
+	if v := i.TreatmentWhen; v != nil {
+		m.SetTreatmentWhen(*v)
+	}
+	if v := i.NoticeReason; v != nil {
+		m.SetNoticeReason(*v)
+	}
+	if v := i.LastName; v != nil {
+		m.SetLastName(*v)
+	}
+	if v := i.FirstName; v != nil {
+		m.SetFirstName(*v)
+	}
+	if v := i.LastNameHiragana; v != nil {
+		m.SetLastNameHiragana(*v)
+	}
+	if v := i.FirstNameHiragana; v != nil {
+		m.SetFirstNameHiragana(*v)
+	}
+	if v := i.PostalCode; v != nil {
+		m.SetPostalCode(*v)
+	}
+	if v := i.PrefectureID; v != nil {
+		m.SetPrefectureID(*v)
+	}
+	if v := i.Address; v != nil {
+		m.SetAddress(*v)
+	}
+	if v := i.Tel; v != nil {
+		m.SetTel(*v)
+	}
+	if v := i.Email; v != nil {
+		m.SetEmail(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateChartInput on the update builder.
+func (u *ChartUpdate) SetInput(i UpdateChartInput) *ChartUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateChartInput on the update-one builder.
+func (u *ChartUpdateOne) SetInput(i UpdateChartInput) *ChartUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
 // CreateTodoInput represents a mutation input for creating todos.
 type CreateTodoInput struct {
 	Text      string

@@ -6,10 +6,1108 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ta-toshio/bherb/ent/chart"
 	"github.com/ta-toshio/bherb/ent/predicate"
 	"github.com/ta-toshio/bherb/ent/todo"
 	"github.com/ta-toshio/bherb/ent/user"
 )
+
+// ChartWhereInput represents a where input for filtering Chart queries.
+type ChartWhereInput struct {
+	Not *ChartWhereInput   `json:"not,omitempty"`
+	Or  []*ChartWhereInput `json:"or,omitempty"`
+	And []*ChartWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "create_time" field predicates.
+	CreateTime      *time.Time  `json:"createTime,omitempty"`
+	CreateTimeNEQ   *time.Time  `json:"createTimeNEQ,omitempty"`
+	CreateTimeIn    []time.Time `json:"createTimeIn,omitempty"`
+	CreateTimeNotIn []time.Time `json:"createTimeNotIn,omitempty"`
+	CreateTimeGT    *time.Time  `json:"createTimeGT,omitempty"`
+	CreateTimeGTE   *time.Time  `json:"createTimeGTE,omitempty"`
+	CreateTimeLT    *time.Time  `json:"createTimeLT,omitempty"`
+	CreateTimeLTE   *time.Time  `json:"createTimeLTE,omitempty"`
+
+	// "update_time" field predicates.
+	UpdateTime      *time.Time  `json:"updateTime,omitempty"`
+	UpdateTimeNEQ   *time.Time  `json:"updateTimeNEQ,omitempty"`
+	UpdateTimeIn    []time.Time `json:"updateTimeIn,omitempty"`
+	UpdateTimeNotIn []time.Time `json:"updateTimeNotIn,omitempty"`
+	UpdateTimeGT    *time.Time  `json:"updateTimeGT,omitempty"`
+	UpdateTimeGTE   *time.Time  `json:"updateTimeGTE,omitempty"`
+	UpdateTimeLT    *time.Time  `json:"updateTimeLT,omitempty"`
+	UpdateTimeLTE   *time.Time  `json:"updateTimeLTE,omitempty"`
+
+	// "patch" field predicates.
+	Patch    *bool `json:"patch,omitempty"`
+	PatchNEQ *bool `json:"patchNEQ,omitempty"`
+
+	// "generation" field predicates.
+	Generation      *int  `json:"generation,omitempty"`
+	GenerationNEQ   *int  `json:"generationNEQ,omitempty"`
+	GenerationIn    []int `json:"generationIn,omitempty"`
+	GenerationNotIn []int `json:"generationNotIn,omitempty"`
+	GenerationGT    *int  `json:"generationGT,omitempty"`
+	GenerationGTE   *int  `json:"generationGTE,omitempty"`
+	GenerationLT    *int  `json:"generationLT,omitempty"`
+	GenerationLTE   *int  `json:"generationLTE,omitempty"`
+
+	// "gender" field predicates.
+	Gender      *int  `json:"gender,omitempty"`
+	GenderNEQ   *int  `json:"genderNEQ,omitempty"`
+	GenderIn    []int `json:"genderIn,omitempty"`
+	GenderNotIn []int `json:"genderNotIn,omitempty"`
+	GenderGT    *int  `json:"genderGT,omitempty"`
+	GenderGTE   *int  `json:"genderGTE,omitempty"`
+	GenderLT    *int  `json:"genderLT,omitempty"`
+	GenderLTE   *int  `json:"genderLTE,omitempty"`
+
+	// "allergy" field predicates.
+	Allergy      *int  `json:"allergy,omitempty"`
+	AllergyNEQ   *int  `json:"allergyNEQ,omitempty"`
+	AllergyIn    []int `json:"allergyIn,omitempty"`
+	AllergyNotIn []int `json:"allergyNotIn,omitempty"`
+	AllergyGT    *int  `json:"allergyGT,omitempty"`
+	AllergyGTE   *int  `json:"allergyGTE,omitempty"`
+	AllergyLT    *int  `json:"allergyLT,omitempty"`
+	AllergyLTE   *int  `json:"allergyLTE,omitempty"`
+
+	// "rash" field predicates.
+	Rash      *int  `json:"rash,omitempty"`
+	RashNEQ   *int  `json:"rashNEQ,omitempty"`
+	RashIn    []int `json:"rashIn,omitempty"`
+	RashNotIn []int `json:"rashNotIn,omitempty"`
+	RashGT    *int  `json:"rashGT,omitempty"`
+	RashGTE   *int  `json:"rashGTE,omitempty"`
+	RashLT    *int  `json:"rashLT,omitempty"`
+	RashLTE   *int  `json:"rashLTE,omitempty"`
+
+	// "sting" field predicates.
+	Sting      *int  `json:"sting,omitempty"`
+	StingNEQ   *int  `json:"stingNEQ,omitempty"`
+	StingIn    []int `json:"stingIn,omitempty"`
+	StingNotIn []int `json:"stingNotIn,omitempty"`
+	StingGT    *int  `json:"stingGT,omitempty"`
+	StingGTE   *int  `json:"stingGTE,omitempty"`
+	StingLT    *int  `json:"stingLT,omitempty"`
+	StingLTE   *int  `json:"stingLTE,omitempty"`
+
+	// "dye_when" field predicates.
+	DyeWhen      *int  `json:"dyeWhen,omitempty"`
+	DyeWhenNEQ   *int  `json:"dyeWhenNEQ,omitempty"`
+	DyeWhenIn    []int `json:"dyeWhenIn,omitempty"`
+	DyeWhenNotIn []int `json:"dyeWhenNotIn,omitempty"`
+	DyeWhenGT    *int  `json:"dyeWhenGT,omitempty"`
+	DyeWhenGTE   *int  `json:"dyeWhenGTE,omitempty"`
+	DyeWhenLT    *int  `json:"dyeWhenLT,omitempty"`
+	DyeWhenLTE   *int  `json:"dyeWhenLTE,omitempty"`
+
+	// "dye_where" field predicates.
+	DyeWhere      *int  `json:"dyeWhere,omitempty"`
+	DyeWhereNEQ   *int  `json:"dyeWhereNEQ,omitempty"`
+	DyeWhereIn    []int `json:"dyeWhereIn,omitempty"`
+	DyeWhereNotIn []int `json:"dyeWhereNotIn,omitempty"`
+	DyeWhereGT    *int  `json:"dyeWhereGT,omitempty"`
+	DyeWhereGTE   *int  `json:"dyeWhereGTE,omitempty"`
+	DyeWhereLT    *int  `json:"dyeWhereLT,omitempty"`
+	DyeWhereLTE   *int  `json:"dyeWhereLTE,omitempty"`
+
+	// "hena_when" field predicates.
+	HenaWhen      *int  `json:"henaWhen,omitempty"`
+	HenaWhenNEQ   *int  `json:"henaWhenNEQ,omitempty"`
+	HenaWhenIn    []int `json:"henaWhenIn,omitempty"`
+	HenaWhenNotIn []int `json:"henaWhenNotIn,omitempty"`
+	HenaWhenGT    *int  `json:"henaWhenGT,omitempty"`
+	HenaWhenGTE   *int  `json:"henaWhenGTE,omitempty"`
+	HenaWhenLT    *int  `json:"henaWhenLT,omitempty"`
+	HenaWhenLTE   *int  `json:"henaWhenLTE,omitempty"`
+
+	// "rebonded_when" field predicates.
+	RebondedWhen      *int  `json:"rebondedWhen,omitempty"`
+	RebondedWhenNEQ   *int  `json:"rebondedWhenNEQ,omitempty"`
+	RebondedWhenIn    []int `json:"rebondedWhenIn,omitempty"`
+	RebondedWhenNotIn []int `json:"rebondedWhenNotIn,omitempty"`
+	RebondedWhenGT    *int  `json:"rebondedWhenGT,omitempty"`
+	RebondedWhenGTE   *int  `json:"rebondedWhenGTE,omitempty"`
+	RebondedWhenLT    *int  `json:"rebondedWhenLT,omitempty"`
+	RebondedWhenLTE   *int  `json:"rebondedWhenLTE,omitempty"`
+
+	// "manicure_when" field predicates.
+	ManicureWhen      *int  `json:"manicureWhen,omitempty"`
+	ManicureWhenNEQ   *int  `json:"manicureWhenNEQ,omitempty"`
+	ManicureWhenIn    []int `json:"manicureWhenIn,omitempty"`
+	ManicureWhenNotIn []int `json:"manicureWhenNotIn,omitempty"`
+	ManicureWhenGT    *int  `json:"manicureWhenGT,omitempty"`
+	ManicureWhenGTE   *int  `json:"manicureWhenGTE,omitempty"`
+	ManicureWhenLT    *int  `json:"manicureWhenLT,omitempty"`
+	ManicureWhenLTE   *int  `json:"manicureWhenLTE,omitempty"`
+
+	// "perm_when" field predicates.
+	PermWhen      *int  `json:"permWhen,omitempty"`
+	PermWhenNEQ   *int  `json:"permWhenNEQ,omitempty"`
+	PermWhenIn    []int `json:"permWhenIn,omitempty"`
+	PermWhenNotIn []int `json:"permWhenNotIn,omitempty"`
+	PermWhenGT    *int  `json:"permWhenGT,omitempty"`
+	PermWhenGTE   *int  `json:"permWhenGTE,omitempty"`
+	PermWhenLT    *int  `json:"permWhenLT,omitempty"`
+	PermWhenLTE   *int  `json:"permWhenLTE,omitempty"`
+
+	// "treatment_when" field predicates.
+	TreatmentWhen      *int  `json:"treatmentWhen,omitempty"`
+	TreatmentWhenNEQ   *int  `json:"treatmentWhenNEQ,omitempty"`
+	TreatmentWhenIn    []int `json:"treatmentWhenIn,omitempty"`
+	TreatmentWhenNotIn []int `json:"treatmentWhenNotIn,omitempty"`
+	TreatmentWhenGT    *int  `json:"treatmentWhenGT,omitempty"`
+	TreatmentWhenGTE   *int  `json:"treatmentWhenGTE,omitempty"`
+	TreatmentWhenLT    *int  `json:"treatmentWhenLT,omitempty"`
+	TreatmentWhenLTE   *int  `json:"treatmentWhenLTE,omitempty"`
+
+	// "notice_reason" field predicates.
+	NoticeReason      *int  `json:"noticeReason,omitempty"`
+	NoticeReasonNEQ   *int  `json:"noticeReasonNEQ,omitempty"`
+	NoticeReasonIn    []int `json:"noticeReasonIn,omitempty"`
+	NoticeReasonNotIn []int `json:"noticeReasonNotIn,omitempty"`
+	NoticeReasonGT    *int  `json:"noticeReasonGT,omitempty"`
+	NoticeReasonGTE   *int  `json:"noticeReasonGTE,omitempty"`
+	NoticeReasonLT    *int  `json:"noticeReasonLT,omitempty"`
+	NoticeReasonLTE   *int  `json:"noticeReasonLTE,omitempty"`
+
+	// "last_name" field predicates.
+	LastName             *string  `json:"lastName,omitempty"`
+	LastNameNEQ          *string  `json:"lastNameNEQ,omitempty"`
+	LastNameIn           []string `json:"lastNameIn,omitempty"`
+	LastNameNotIn        []string `json:"lastNameNotIn,omitempty"`
+	LastNameGT           *string  `json:"lastNameGT,omitempty"`
+	LastNameGTE          *string  `json:"lastNameGTE,omitempty"`
+	LastNameLT           *string  `json:"lastNameLT,omitempty"`
+	LastNameLTE          *string  `json:"lastNameLTE,omitempty"`
+	LastNameContains     *string  `json:"lastNameContains,omitempty"`
+	LastNameHasPrefix    *string  `json:"lastNameHasPrefix,omitempty"`
+	LastNameHasSuffix    *string  `json:"lastNameHasSuffix,omitempty"`
+	LastNameEqualFold    *string  `json:"lastNameEqualFold,omitempty"`
+	LastNameContainsFold *string  `json:"lastNameContainsFold,omitempty"`
+
+	// "first_name" field predicates.
+	FirstName             *string  `json:"firstName,omitempty"`
+	FirstNameNEQ          *string  `json:"firstNameNEQ,omitempty"`
+	FirstNameIn           []string `json:"firstNameIn,omitempty"`
+	FirstNameNotIn        []string `json:"firstNameNotIn,omitempty"`
+	FirstNameGT           *string  `json:"firstNameGT,omitempty"`
+	FirstNameGTE          *string  `json:"firstNameGTE,omitempty"`
+	FirstNameLT           *string  `json:"firstNameLT,omitempty"`
+	FirstNameLTE          *string  `json:"firstNameLTE,omitempty"`
+	FirstNameContains     *string  `json:"firstNameContains,omitempty"`
+	FirstNameHasPrefix    *string  `json:"firstNameHasPrefix,omitempty"`
+	FirstNameHasSuffix    *string  `json:"firstNameHasSuffix,omitempty"`
+	FirstNameEqualFold    *string  `json:"firstNameEqualFold,omitempty"`
+	FirstNameContainsFold *string  `json:"firstNameContainsFold,omitempty"`
+
+	// "last_name_hiragana" field predicates.
+	LastNameHiragana             *string  `json:"lastNameHiragana,omitempty"`
+	LastNameHiraganaNEQ          *string  `json:"lastNameHiraganaNEQ,omitempty"`
+	LastNameHiraganaIn           []string `json:"lastNameHiraganaIn,omitempty"`
+	LastNameHiraganaNotIn        []string `json:"lastNameHiraganaNotIn,omitempty"`
+	LastNameHiraganaGT           *string  `json:"lastNameHiraganaGT,omitempty"`
+	LastNameHiraganaGTE          *string  `json:"lastNameHiraganaGTE,omitempty"`
+	LastNameHiraganaLT           *string  `json:"lastNameHiraganaLT,omitempty"`
+	LastNameHiraganaLTE          *string  `json:"lastNameHiraganaLTE,omitempty"`
+	LastNameHiraganaContains     *string  `json:"lastNameHiraganaContains,omitempty"`
+	LastNameHiraganaHasPrefix    *string  `json:"lastNameHiraganaHasPrefix,omitempty"`
+	LastNameHiraganaHasSuffix    *string  `json:"lastNameHiraganaHasSuffix,omitempty"`
+	LastNameHiraganaEqualFold    *string  `json:"lastNameHiraganaEqualFold,omitempty"`
+	LastNameHiraganaContainsFold *string  `json:"lastNameHiraganaContainsFold,omitempty"`
+
+	// "first_name_hiragana" field predicates.
+	FirstNameHiragana             *string  `json:"firstNameHiragana,omitempty"`
+	FirstNameHiraganaNEQ          *string  `json:"firstNameHiraganaNEQ,omitempty"`
+	FirstNameHiraganaIn           []string `json:"firstNameHiraganaIn,omitempty"`
+	FirstNameHiraganaNotIn        []string `json:"firstNameHiraganaNotIn,omitempty"`
+	FirstNameHiraganaGT           *string  `json:"firstNameHiraganaGT,omitempty"`
+	FirstNameHiraganaGTE          *string  `json:"firstNameHiraganaGTE,omitempty"`
+	FirstNameHiraganaLT           *string  `json:"firstNameHiraganaLT,omitempty"`
+	FirstNameHiraganaLTE          *string  `json:"firstNameHiraganaLTE,omitempty"`
+	FirstNameHiraganaContains     *string  `json:"firstNameHiraganaContains,omitempty"`
+	FirstNameHiraganaHasPrefix    *string  `json:"firstNameHiraganaHasPrefix,omitempty"`
+	FirstNameHiraganaHasSuffix    *string  `json:"firstNameHiraganaHasSuffix,omitempty"`
+	FirstNameHiraganaEqualFold    *string  `json:"firstNameHiraganaEqualFold,omitempty"`
+	FirstNameHiraganaContainsFold *string  `json:"firstNameHiraganaContainsFold,omitempty"`
+
+	// "postal_code" field predicates.
+	PostalCode             *string  `json:"postalCode,omitempty"`
+	PostalCodeNEQ          *string  `json:"postalCodeNEQ,omitempty"`
+	PostalCodeIn           []string `json:"postalCodeIn,omitempty"`
+	PostalCodeNotIn        []string `json:"postalCodeNotIn,omitempty"`
+	PostalCodeGT           *string  `json:"postalCodeGT,omitempty"`
+	PostalCodeGTE          *string  `json:"postalCodeGTE,omitempty"`
+	PostalCodeLT           *string  `json:"postalCodeLT,omitempty"`
+	PostalCodeLTE          *string  `json:"postalCodeLTE,omitempty"`
+	PostalCodeContains     *string  `json:"postalCodeContains,omitempty"`
+	PostalCodeHasPrefix    *string  `json:"postalCodeHasPrefix,omitempty"`
+	PostalCodeHasSuffix    *string  `json:"postalCodeHasSuffix,omitempty"`
+	PostalCodeEqualFold    *string  `json:"postalCodeEqualFold,omitempty"`
+	PostalCodeContainsFold *string  `json:"postalCodeContainsFold,omitempty"`
+
+	// "prefecture_id" field predicates.
+	PrefectureID      *int  `json:"prefectureID,omitempty"`
+	PrefectureIDNEQ   *int  `json:"prefectureIDNEQ,omitempty"`
+	PrefectureIDIn    []int `json:"prefectureIDIn,omitempty"`
+	PrefectureIDNotIn []int `json:"prefectureIDNotIn,omitempty"`
+	PrefectureIDGT    *int  `json:"prefectureIDGT,omitempty"`
+	PrefectureIDGTE   *int  `json:"prefectureIDGTE,omitempty"`
+	PrefectureIDLT    *int  `json:"prefectureIDLT,omitempty"`
+	PrefectureIDLTE   *int  `json:"prefectureIDLTE,omitempty"`
+
+	// "address" field predicates.
+	Address             *string  `json:"address,omitempty"`
+	AddressNEQ          *string  `json:"addressNEQ,omitempty"`
+	AddressIn           []string `json:"addressIn,omitempty"`
+	AddressNotIn        []string `json:"addressNotIn,omitempty"`
+	AddressGT           *string  `json:"addressGT,omitempty"`
+	AddressGTE          *string  `json:"addressGTE,omitempty"`
+	AddressLT           *string  `json:"addressLT,omitempty"`
+	AddressLTE          *string  `json:"addressLTE,omitempty"`
+	AddressContains     *string  `json:"addressContains,omitempty"`
+	AddressHasPrefix    *string  `json:"addressHasPrefix,omitempty"`
+	AddressHasSuffix    *string  `json:"addressHasSuffix,omitempty"`
+	AddressEqualFold    *string  `json:"addressEqualFold,omitempty"`
+	AddressContainsFold *string  `json:"addressContainsFold,omitempty"`
+
+	// "tel" field predicates.
+	Tel             *string  `json:"tel,omitempty"`
+	TelNEQ          *string  `json:"telNEQ,omitempty"`
+	TelIn           []string `json:"telIn,omitempty"`
+	TelNotIn        []string `json:"telNotIn,omitempty"`
+	TelGT           *string  `json:"telGT,omitempty"`
+	TelGTE          *string  `json:"telGTE,omitempty"`
+	TelLT           *string  `json:"telLT,omitempty"`
+	TelLTE          *string  `json:"telLTE,omitempty"`
+	TelContains     *string  `json:"telContains,omitempty"`
+	TelHasPrefix    *string  `json:"telHasPrefix,omitempty"`
+	TelHasSuffix    *string  `json:"telHasSuffix,omitempty"`
+	TelEqualFold    *string  `json:"telEqualFold,omitempty"`
+	TelContainsFold *string  `json:"telContainsFold,omitempty"`
+
+	// "email" field predicates.
+	Email             *string  `json:"email,omitempty"`
+	EmailNEQ          *string  `json:"emailNEQ,omitempty"`
+	EmailIn           []string `json:"emailIn,omitempty"`
+	EmailNotIn        []string `json:"emailNotIn,omitempty"`
+	EmailGT           *string  `json:"emailGT,omitempty"`
+	EmailGTE          *string  `json:"emailGTE,omitempty"`
+	EmailLT           *string  `json:"emailLT,omitempty"`
+	EmailLTE          *string  `json:"emailLTE,omitempty"`
+	EmailContains     *string  `json:"emailContains,omitempty"`
+	EmailHasPrefix    *string  `json:"emailHasPrefix,omitempty"`
+	EmailHasSuffix    *string  `json:"emailHasSuffix,omitempty"`
+	EmailEqualFold    *string  `json:"emailEqualFold,omitempty"`
+	EmailContainsFold *string  `json:"emailContainsFold,omitempty"`
+}
+
+// Filter applies the ChartWhereInput filter on the ChartQuery builder.
+func (i *ChartWhereInput) Filter(q *ChartQuery) (*ChartQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering charts.
+// An error is returned if the input is empty or invalid.
+func (i *ChartWhereInput) P() (predicate.Chart, error) {
+	var predicates []predicate.Chart
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, chart.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Chart, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, chart.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Chart, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, chart.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, chart.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, chart.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, chart.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, chart.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, chart.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, chart.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, chart.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, chart.IDLTE(*i.IDLTE))
+	}
+	if i.CreateTime != nil {
+		predicates = append(predicates, chart.CreateTimeEQ(*i.CreateTime))
+	}
+	if i.CreateTimeNEQ != nil {
+		predicates = append(predicates, chart.CreateTimeNEQ(*i.CreateTimeNEQ))
+	}
+	if len(i.CreateTimeIn) > 0 {
+		predicates = append(predicates, chart.CreateTimeIn(i.CreateTimeIn...))
+	}
+	if len(i.CreateTimeNotIn) > 0 {
+		predicates = append(predicates, chart.CreateTimeNotIn(i.CreateTimeNotIn...))
+	}
+	if i.CreateTimeGT != nil {
+		predicates = append(predicates, chart.CreateTimeGT(*i.CreateTimeGT))
+	}
+	if i.CreateTimeGTE != nil {
+		predicates = append(predicates, chart.CreateTimeGTE(*i.CreateTimeGTE))
+	}
+	if i.CreateTimeLT != nil {
+		predicates = append(predicates, chart.CreateTimeLT(*i.CreateTimeLT))
+	}
+	if i.CreateTimeLTE != nil {
+		predicates = append(predicates, chart.CreateTimeLTE(*i.CreateTimeLTE))
+	}
+	if i.UpdateTime != nil {
+		predicates = append(predicates, chart.UpdateTimeEQ(*i.UpdateTime))
+	}
+	if i.UpdateTimeNEQ != nil {
+		predicates = append(predicates, chart.UpdateTimeNEQ(*i.UpdateTimeNEQ))
+	}
+	if len(i.UpdateTimeIn) > 0 {
+		predicates = append(predicates, chart.UpdateTimeIn(i.UpdateTimeIn...))
+	}
+	if len(i.UpdateTimeNotIn) > 0 {
+		predicates = append(predicates, chart.UpdateTimeNotIn(i.UpdateTimeNotIn...))
+	}
+	if i.UpdateTimeGT != nil {
+		predicates = append(predicates, chart.UpdateTimeGT(*i.UpdateTimeGT))
+	}
+	if i.UpdateTimeGTE != nil {
+		predicates = append(predicates, chart.UpdateTimeGTE(*i.UpdateTimeGTE))
+	}
+	if i.UpdateTimeLT != nil {
+		predicates = append(predicates, chart.UpdateTimeLT(*i.UpdateTimeLT))
+	}
+	if i.UpdateTimeLTE != nil {
+		predicates = append(predicates, chart.UpdateTimeLTE(*i.UpdateTimeLTE))
+	}
+	if i.Patch != nil {
+		predicates = append(predicates, chart.PatchEQ(*i.Patch))
+	}
+	if i.PatchNEQ != nil {
+		predicates = append(predicates, chart.PatchNEQ(*i.PatchNEQ))
+	}
+	if i.Generation != nil {
+		predicates = append(predicates, chart.GenerationEQ(*i.Generation))
+	}
+	if i.GenerationNEQ != nil {
+		predicates = append(predicates, chart.GenerationNEQ(*i.GenerationNEQ))
+	}
+	if len(i.GenerationIn) > 0 {
+		predicates = append(predicates, chart.GenerationIn(i.GenerationIn...))
+	}
+	if len(i.GenerationNotIn) > 0 {
+		predicates = append(predicates, chart.GenerationNotIn(i.GenerationNotIn...))
+	}
+	if i.GenerationGT != nil {
+		predicates = append(predicates, chart.GenerationGT(*i.GenerationGT))
+	}
+	if i.GenerationGTE != nil {
+		predicates = append(predicates, chart.GenerationGTE(*i.GenerationGTE))
+	}
+	if i.GenerationLT != nil {
+		predicates = append(predicates, chart.GenerationLT(*i.GenerationLT))
+	}
+	if i.GenerationLTE != nil {
+		predicates = append(predicates, chart.GenerationLTE(*i.GenerationLTE))
+	}
+	if i.Gender != nil {
+		predicates = append(predicates, chart.GenderEQ(*i.Gender))
+	}
+	if i.GenderNEQ != nil {
+		predicates = append(predicates, chart.GenderNEQ(*i.GenderNEQ))
+	}
+	if len(i.GenderIn) > 0 {
+		predicates = append(predicates, chart.GenderIn(i.GenderIn...))
+	}
+	if len(i.GenderNotIn) > 0 {
+		predicates = append(predicates, chart.GenderNotIn(i.GenderNotIn...))
+	}
+	if i.GenderGT != nil {
+		predicates = append(predicates, chart.GenderGT(*i.GenderGT))
+	}
+	if i.GenderGTE != nil {
+		predicates = append(predicates, chart.GenderGTE(*i.GenderGTE))
+	}
+	if i.GenderLT != nil {
+		predicates = append(predicates, chart.GenderLT(*i.GenderLT))
+	}
+	if i.GenderLTE != nil {
+		predicates = append(predicates, chart.GenderLTE(*i.GenderLTE))
+	}
+	if i.Allergy != nil {
+		predicates = append(predicates, chart.AllergyEQ(*i.Allergy))
+	}
+	if i.AllergyNEQ != nil {
+		predicates = append(predicates, chart.AllergyNEQ(*i.AllergyNEQ))
+	}
+	if len(i.AllergyIn) > 0 {
+		predicates = append(predicates, chart.AllergyIn(i.AllergyIn...))
+	}
+	if len(i.AllergyNotIn) > 0 {
+		predicates = append(predicates, chart.AllergyNotIn(i.AllergyNotIn...))
+	}
+	if i.AllergyGT != nil {
+		predicates = append(predicates, chart.AllergyGT(*i.AllergyGT))
+	}
+	if i.AllergyGTE != nil {
+		predicates = append(predicates, chart.AllergyGTE(*i.AllergyGTE))
+	}
+	if i.AllergyLT != nil {
+		predicates = append(predicates, chart.AllergyLT(*i.AllergyLT))
+	}
+	if i.AllergyLTE != nil {
+		predicates = append(predicates, chart.AllergyLTE(*i.AllergyLTE))
+	}
+	if i.Rash != nil {
+		predicates = append(predicates, chart.RashEQ(*i.Rash))
+	}
+	if i.RashNEQ != nil {
+		predicates = append(predicates, chart.RashNEQ(*i.RashNEQ))
+	}
+	if len(i.RashIn) > 0 {
+		predicates = append(predicates, chart.RashIn(i.RashIn...))
+	}
+	if len(i.RashNotIn) > 0 {
+		predicates = append(predicates, chart.RashNotIn(i.RashNotIn...))
+	}
+	if i.RashGT != nil {
+		predicates = append(predicates, chart.RashGT(*i.RashGT))
+	}
+	if i.RashGTE != nil {
+		predicates = append(predicates, chart.RashGTE(*i.RashGTE))
+	}
+	if i.RashLT != nil {
+		predicates = append(predicates, chart.RashLT(*i.RashLT))
+	}
+	if i.RashLTE != nil {
+		predicates = append(predicates, chart.RashLTE(*i.RashLTE))
+	}
+	if i.Sting != nil {
+		predicates = append(predicates, chart.StingEQ(*i.Sting))
+	}
+	if i.StingNEQ != nil {
+		predicates = append(predicates, chart.StingNEQ(*i.StingNEQ))
+	}
+	if len(i.StingIn) > 0 {
+		predicates = append(predicates, chart.StingIn(i.StingIn...))
+	}
+	if len(i.StingNotIn) > 0 {
+		predicates = append(predicates, chart.StingNotIn(i.StingNotIn...))
+	}
+	if i.StingGT != nil {
+		predicates = append(predicates, chart.StingGT(*i.StingGT))
+	}
+	if i.StingGTE != nil {
+		predicates = append(predicates, chart.StingGTE(*i.StingGTE))
+	}
+	if i.StingLT != nil {
+		predicates = append(predicates, chart.StingLT(*i.StingLT))
+	}
+	if i.StingLTE != nil {
+		predicates = append(predicates, chart.StingLTE(*i.StingLTE))
+	}
+	if i.DyeWhen != nil {
+		predicates = append(predicates, chart.DyeWhenEQ(*i.DyeWhen))
+	}
+	if i.DyeWhenNEQ != nil {
+		predicates = append(predicates, chart.DyeWhenNEQ(*i.DyeWhenNEQ))
+	}
+	if len(i.DyeWhenIn) > 0 {
+		predicates = append(predicates, chart.DyeWhenIn(i.DyeWhenIn...))
+	}
+	if len(i.DyeWhenNotIn) > 0 {
+		predicates = append(predicates, chart.DyeWhenNotIn(i.DyeWhenNotIn...))
+	}
+	if i.DyeWhenGT != nil {
+		predicates = append(predicates, chart.DyeWhenGT(*i.DyeWhenGT))
+	}
+	if i.DyeWhenGTE != nil {
+		predicates = append(predicates, chart.DyeWhenGTE(*i.DyeWhenGTE))
+	}
+	if i.DyeWhenLT != nil {
+		predicates = append(predicates, chart.DyeWhenLT(*i.DyeWhenLT))
+	}
+	if i.DyeWhenLTE != nil {
+		predicates = append(predicates, chart.DyeWhenLTE(*i.DyeWhenLTE))
+	}
+	if i.DyeWhere != nil {
+		predicates = append(predicates, chart.DyeWhereEQ(*i.DyeWhere))
+	}
+	if i.DyeWhereNEQ != nil {
+		predicates = append(predicates, chart.DyeWhereNEQ(*i.DyeWhereNEQ))
+	}
+	if len(i.DyeWhereIn) > 0 {
+		predicates = append(predicates, chart.DyeWhereIn(i.DyeWhereIn...))
+	}
+	if len(i.DyeWhereNotIn) > 0 {
+		predicates = append(predicates, chart.DyeWhereNotIn(i.DyeWhereNotIn...))
+	}
+	if i.DyeWhereGT != nil {
+		predicates = append(predicates, chart.DyeWhereGT(*i.DyeWhereGT))
+	}
+	if i.DyeWhereGTE != nil {
+		predicates = append(predicates, chart.DyeWhereGTE(*i.DyeWhereGTE))
+	}
+	if i.DyeWhereLT != nil {
+		predicates = append(predicates, chart.DyeWhereLT(*i.DyeWhereLT))
+	}
+	if i.DyeWhereLTE != nil {
+		predicates = append(predicates, chart.DyeWhereLTE(*i.DyeWhereLTE))
+	}
+	if i.HenaWhen != nil {
+		predicates = append(predicates, chart.HenaWhenEQ(*i.HenaWhen))
+	}
+	if i.HenaWhenNEQ != nil {
+		predicates = append(predicates, chart.HenaWhenNEQ(*i.HenaWhenNEQ))
+	}
+	if len(i.HenaWhenIn) > 0 {
+		predicates = append(predicates, chart.HenaWhenIn(i.HenaWhenIn...))
+	}
+	if len(i.HenaWhenNotIn) > 0 {
+		predicates = append(predicates, chart.HenaWhenNotIn(i.HenaWhenNotIn...))
+	}
+	if i.HenaWhenGT != nil {
+		predicates = append(predicates, chart.HenaWhenGT(*i.HenaWhenGT))
+	}
+	if i.HenaWhenGTE != nil {
+		predicates = append(predicates, chart.HenaWhenGTE(*i.HenaWhenGTE))
+	}
+	if i.HenaWhenLT != nil {
+		predicates = append(predicates, chart.HenaWhenLT(*i.HenaWhenLT))
+	}
+	if i.HenaWhenLTE != nil {
+		predicates = append(predicates, chart.HenaWhenLTE(*i.HenaWhenLTE))
+	}
+	if i.RebondedWhen != nil {
+		predicates = append(predicates, chart.RebondedWhenEQ(*i.RebondedWhen))
+	}
+	if i.RebondedWhenNEQ != nil {
+		predicates = append(predicates, chart.RebondedWhenNEQ(*i.RebondedWhenNEQ))
+	}
+	if len(i.RebondedWhenIn) > 0 {
+		predicates = append(predicates, chart.RebondedWhenIn(i.RebondedWhenIn...))
+	}
+	if len(i.RebondedWhenNotIn) > 0 {
+		predicates = append(predicates, chart.RebondedWhenNotIn(i.RebondedWhenNotIn...))
+	}
+	if i.RebondedWhenGT != nil {
+		predicates = append(predicates, chart.RebondedWhenGT(*i.RebondedWhenGT))
+	}
+	if i.RebondedWhenGTE != nil {
+		predicates = append(predicates, chart.RebondedWhenGTE(*i.RebondedWhenGTE))
+	}
+	if i.RebondedWhenLT != nil {
+		predicates = append(predicates, chart.RebondedWhenLT(*i.RebondedWhenLT))
+	}
+	if i.RebondedWhenLTE != nil {
+		predicates = append(predicates, chart.RebondedWhenLTE(*i.RebondedWhenLTE))
+	}
+	if i.ManicureWhen != nil {
+		predicates = append(predicates, chart.ManicureWhenEQ(*i.ManicureWhen))
+	}
+	if i.ManicureWhenNEQ != nil {
+		predicates = append(predicates, chart.ManicureWhenNEQ(*i.ManicureWhenNEQ))
+	}
+	if len(i.ManicureWhenIn) > 0 {
+		predicates = append(predicates, chart.ManicureWhenIn(i.ManicureWhenIn...))
+	}
+	if len(i.ManicureWhenNotIn) > 0 {
+		predicates = append(predicates, chart.ManicureWhenNotIn(i.ManicureWhenNotIn...))
+	}
+	if i.ManicureWhenGT != nil {
+		predicates = append(predicates, chart.ManicureWhenGT(*i.ManicureWhenGT))
+	}
+	if i.ManicureWhenGTE != nil {
+		predicates = append(predicates, chart.ManicureWhenGTE(*i.ManicureWhenGTE))
+	}
+	if i.ManicureWhenLT != nil {
+		predicates = append(predicates, chart.ManicureWhenLT(*i.ManicureWhenLT))
+	}
+	if i.ManicureWhenLTE != nil {
+		predicates = append(predicates, chart.ManicureWhenLTE(*i.ManicureWhenLTE))
+	}
+	if i.PermWhen != nil {
+		predicates = append(predicates, chart.PermWhenEQ(*i.PermWhen))
+	}
+	if i.PermWhenNEQ != nil {
+		predicates = append(predicates, chart.PermWhenNEQ(*i.PermWhenNEQ))
+	}
+	if len(i.PermWhenIn) > 0 {
+		predicates = append(predicates, chart.PermWhenIn(i.PermWhenIn...))
+	}
+	if len(i.PermWhenNotIn) > 0 {
+		predicates = append(predicates, chart.PermWhenNotIn(i.PermWhenNotIn...))
+	}
+	if i.PermWhenGT != nil {
+		predicates = append(predicates, chart.PermWhenGT(*i.PermWhenGT))
+	}
+	if i.PermWhenGTE != nil {
+		predicates = append(predicates, chart.PermWhenGTE(*i.PermWhenGTE))
+	}
+	if i.PermWhenLT != nil {
+		predicates = append(predicates, chart.PermWhenLT(*i.PermWhenLT))
+	}
+	if i.PermWhenLTE != nil {
+		predicates = append(predicates, chart.PermWhenLTE(*i.PermWhenLTE))
+	}
+	if i.TreatmentWhen != nil {
+		predicates = append(predicates, chart.TreatmentWhenEQ(*i.TreatmentWhen))
+	}
+	if i.TreatmentWhenNEQ != nil {
+		predicates = append(predicates, chart.TreatmentWhenNEQ(*i.TreatmentWhenNEQ))
+	}
+	if len(i.TreatmentWhenIn) > 0 {
+		predicates = append(predicates, chart.TreatmentWhenIn(i.TreatmentWhenIn...))
+	}
+	if len(i.TreatmentWhenNotIn) > 0 {
+		predicates = append(predicates, chart.TreatmentWhenNotIn(i.TreatmentWhenNotIn...))
+	}
+	if i.TreatmentWhenGT != nil {
+		predicates = append(predicates, chart.TreatmentWhenGT(*i.TreatmentWhenGT))
+	}
+	if i.TreatmentWhenGTE != nil {
+		predicates = append(predicates, chart.TreatmentWhenGTE(*i.TreatmentWhenGTE))
+	}
+	if i.TreatmentWhenLT != nil {
+		predicates = append(predicates, chart.TreatmentWhenLT(*i.TreatmentWhenLT))
+	}
+	if i.TreatmentWhenLTE != nil {
+		predicates = append(predicates, chart.TreatmentWhenLTE(*i.TreatmentWhenLTE))
+	}
+	if i.NoticeReason != nil {
+		predicates = append(predicates, chart.NoticeReasonEQ(*i.NoticeReason))
+	}
+	if i.NoticeReasonNEQ != nil {
+		predicates = append(predicates, chart.NoticeReasonNEQ(*i.NoticeReasonNEQ))
+	}
+	if len(i.NoticeReasonIn) > 0 {
+		predicates = append(predicates, chart.NoticeReasonIn(i.NoticeReasonIn...))
+	}
+	if len(i.NoticeReasonNotIn) > 0 {
+		predicates = append(predicates, chart.NoticeReasonNotIn(i.NoticeReasonNotIn...))
+	}
+	if i.NoticeReasonGT != nil {
+		predicates = append(predicates, chart.NoticeReasonGT(*i.NoticeReasonGT))
+	}
+	if i.NoticeReasonGTE != nil {
+		predicates = append(predicates, chart.NoticeReasonGTE(*i.NoticeReasonGTE))
+	}
+	if i.NoticeReasonLT != nil {
+		predicates = append(predicates, chart.NoticeReasonLT(*i.NoticeReasonLT))
+	}
+	if i.NoticeReasonLTE != nil {
+		predicates = append(predicates, chart.NoticeReasonLTE(*i.NoticeReasonLTE))
+	}
+	if i.LastName != nil {
+		predicates = append(predicates, chart.LastNameEQ(*i.LastName))
+	}
+	if i.LastNameNEQ != nil {
+		predicates = append(predicates, chart.LastNameNEQ(*i.LastNameNEQ))
+	}
+	if len(i.LastNameIn) > 0 {
+		predicates = append(predicates, chart.LastNameIn(i.LastNameIn...))
+	}
+	if len(i.LastNameNotIn) > 0 {
+		predicates = append(predicates, chart.LastNameNotIn(i.LastNameNotIn...))
+	}
+	if i.LastNameGT != nil {
+		predicates = append(predicates, chart.LastNameGT(*i.LastNameGT))
+	}
+	if i.LastNameGTE != nil {
+		predicates = append(predicates, chart.LastNameGTE(*i.LastNameGTE))
+	}
+	if i.LastNameLT != nil {
+		predicates = append(predicates, chart.LastNameLT(*i.LastNameLT))
+	}
+	if i.LastNameLTE != nil {
+		predicates = append(predicates, chart.LastNameLTE(*i.LastNameLTE))
+	}
+	if i.LastNameContains != nil {
+		predicates = append(predicates, chart.LastNameContains(*i.LastNameContains))
+	}
+	if i.LastNameHasPrefix != nil {
+		predicates = append(predicates, chart.LastNameHasPrefix(*i.LastNameHasPrefix))
+	}
+	if i.LastNameHasSuffix != nil {
+		predicates = append(predicates, chart.LastNameHasSuffix(*i.LastNameHasSuffix))
+	}
+	if i.LastNameEqualFold != nil {
+		predicates = append(predicates, chart.LastNameEqualFold(*i.LastNameEqualFold))
+	}
+	if i.LastNameContainsFold != nil {
+		predicates = append(predicates, chart.LastNameContainsFold(*i.LastNameContainsFold))
+	}
+	if i.FirstName != nil {
+		predicates = append(predicates, chart.FirstNameEQ(*i.FirstName))
+	}
+	if i.FirstNameNEQ != nil {
+		predicates = append(predicates, chart.FirstNameNEQ(*i.FirstNameNEQ))
+	}
+	if len(i.FirstNameIn) > 0 {
+		predicates = append(predicates, chart.FirstNameIn(i.FirstNameIn...))
+	}
+	if len(i.FirstNameNotIn) > 0 {
+		predicates = append(predicates, chart.FirstNameNotIn(i.FirstNameNotIn...))
+	}
+	if i.FirstNameGT != nil {
+		predicates = append(predicates, chart.FirstNameGT(*i.FirstNameGT))
+	}
+	if i.FirstNameGTE != nil {
+		predicates = append(predicates, chart.FirstNameGTE(*i.FirstNameGTE))
+	}
+	if i.FirstNameLT != nil {
+		predicates = append(predicates, chart.FirstNameLT(*i.FirstNameLT))
+	}
+	if i.FirstNameLTE != nil {
+		predicates = append(predicates, chart.FirstNameLTE(*i.FirstNameLTE))
+	}
+	if i.FirstNameContains != nil {
+		predicates = append(predicates, chart.FirstNameContains(*i.FirstNameContains))
+	}
+	if i.FirstNameHasPrefix != nil {
+		predicates = append(predicates, chart.FirstNameHasPrefix(*i.FirstNameHasPrefix))
+	}
+	if i.FirstNameHasSuffix != nil {
+		predicates = append(predicates, chart.FirstNameHasSuffix(*i.FirstNameHasSuffix))
+	}
+	if i.FirstNameEqualFold != nil {
+		predicates = append(predicates, chart.FirstNameEqualFold(*i.FirstNameEqualFold))
+	}
+	if i.FirstNameContainsFold != nil {
+		predicates = append(predicates, chart.FirstNameContainsFold(*i.FirstNameContainsFold))
+	}
+	if i.LastNameHiragana != nil {
+		predicates = append(predicates, chart.LastNameHiraganaEQ(*i.LastNameHiragana))
+	}
+	if i.LastNameHiraganaNEQ != nil {
+		predicates = append(predicates, chart.LastNameHiraganaNEQ(*i.LastNameHiraganaNEQ))
+	}
+	if len(i.LastNameHiraganaIn) > 0 {
+		predicates = append(predicates, chart.LastNameHiraganaIn(i.LastNameHiraganaIn...))
+	}
+	if len(i.LastNameHiraganaNotIn) > 0 {
+		predicates = append(predicates, chart.LastNameHiraganaNotIn(i.LastNameHiraganaNotIn...))
+	}
+	if i.LastNameHiraganaGT != nil {
+		predicates = append(predicates, chart.LastNameHiraganaGT(*i.LastNameHiraganaGT))
+	}
+	if i.LastNameHiraganaGTE != nil {
+		predicates = append(predicates, chart.LastNameHiraganaGTE(*i.LastNameHiraganaGTE))
+	}
+	if i.LastNameHiraganaLT != nil {
+		predicates = append(predicates, chart.LastNameHiraganaLT(*i.LastNameHiraganaLT))
+	}
+	if i.LastNameHiraganaLTE != nil {
+		predicates = append(predicates, chart.LastNameHiraganaLTE(*i.LastNameHiraganaLTE))
+	}
+	if i.LastNameHiraganaContains != nil {
+		predicates = append(predicates, chart.LastNameHiraganaContains(*i.LastNameHiraganaContains))
+	}
+	if i.LastNameHiraganaHasPrefix != nil {
+		predicates = append(predicates, chart.LastNameHiraganaHasPrefix(*i.LastNameHiraganaHasPrefix))
+	}
+	if i.LastNameHiraganaHasSuffix != nil {
+		predicates = append(predicates, chart.LastNameHiraganaHasSuffix(*i.LastNameHiraganaHasSuffix))
+	}
+	if i.LastNameHiraganaEqualFold != nil {
+		predicates = append(predicates, chart.LastNameHiraganaEqualFold(*i.LastNameHiraganaEqualFold))
+	}
+	if i.LastNameHiraganaContainsFold != nil {
+		predicates = append(predicates, chart.LastNameHiraganaContainsFold(*i.LastNameHiraganaContainsFold))
+	}
+	if i.FirstNameHiragana != nil {
+		predicates = append(predicates, chart.FirstNameHiraganaEQ(*i.FirstNameHiragana))
+	}
+	if i.FirstNameHiraganaNEQ != nil {
+		predicates = append(predicates, chart.FirstNameHiraganaNEQ(*i.FirstNameHiraganaNEQ))
+	}
+	if len(i.FirstNameHiraganaIn) > 0 {
+		predicates = append(predicates, chart.FirstNameHiraganaIn(i.FirstNameHiraganaIn...))
+	}
+	if len(i.FirstNameHiraganaNotIn) > 0 {
+		predicates = append(predicates, chart.FirstNameHiraganaNotIn(i.FirstNameHiraganaNotIn...))
+	}
+	if i.FirstNameHiraganaGT != nil {
+		predicates = append(predicates, chart.FirstNameHiraganaGT(*i.FirstNameHiraganaGT))
+	}
+	if i.FirstNameHiraganaGTE != nil {
+		predicates = append(predicates, chart.FirstNameHiraganaGTE(*i.FirstNameHiraganaGTE))
+	}
+	if i.FirstNameHiraganaLT != nil {
+		predicates = append(predicates, chart.FirstNameHiraganaLT(*i.FirstNameHiraganaLT))
+	}
+	if i.FirstNameHiraganaLTE != nil {
+		predicates = append(predicates, chart.FirstNameHiraganaLTE(*i.FirstNameHiraganaLTE))
+	}
+	if i.FirstNameHiraganaContains != nil {
+		predicates = append(predicates, chart.FirstNameHiraganaContains(*i.FirstNameHiraganaContains))
+	}
+	if i.FirstNameHiraganaHasPrefix != nil {
+		predicates = append(predicates, chart.FirstNameHiraganaHasPrefix(*i.FirstNameHiraganaHasPrefix))
+	}
+	if i.FirstNameHiraganaHasSuffix != nil {
+		predicates = append(predicates, chart.FirstNameHiraganaHasSuffix(*i.FirstNameHiraganaHasSuffix))
+	}
+	if i.FirstNameHiraganaEqualFold != nil {
+		predicates = append(predicates, chart.FirstNameHiraganaEqualFold(*i.FirstNameHiraganaEqualFold))
+	}
+	if i.FirstNameHiraganaContainsFold != nil {
+		predicates = append(predicates, chart.FirstNameHiraganaContainsFold(*i.FirstNameHiraganaContainsFold))
+	}
+	if i.PostalCode != nil {
+		predicates = append(predicates, chart.PostalCodeEQ(*i.PostalCode))
+	}
+	if i.PostalCodeNEQ != nil {
+		predicates = append(predicates, chart.PostalCodeNEQ(*i.PostalCodeNEQ))
+	}
+	if len(i.PostalCodeIn) > 0 {
+		predicates = append(predicates, chart.PostalCodeIn(i.PostalCodeIn...))
+	}
+	if len(i.PostalCodeNotIn) > 0 {
+		predicates = append(predicates, chart.PostalCodeNotIn(i.PostalCodeNotIn...))
+	}
+	if i.PostalCodeGT != nil {
+		predicates = append(predicates, chart.PostalCodeGT(*i.PostalCodeGT))
+	}
+	if i.PostalCodeGTE != nil {
+		predicates = append(predicates, chart.PostalCodeGTE(*i.PostalCodeGTE))
+	}
+	if i.PostalCodeLT != nil {
+		predicates = append(predicates, chart.PostalCodeLT(*i.PostalCodeLT))
+	}
+	if i.PostalCodeLTE != nil {
+		predicates = append(predicates, chart.PostalCodeLTE(*i.PostalCodeLTE))
+	}
+	if i.PostalCodeContains != nil {
+		predicates = append(predicates, chart.PostalCodeContains(*i.PostalCodeContains))
+	}
+	if i.PostalCodeHasPrefix != nil {
+		predicates = append(predicates, chart.PostalCodeHasPrefix(*i.PostalCodeHasPrefix))
+	}
+	if i.PostalCodeHasSuffix != nil {
+		predicates = append(predicates, chart.PostalCodeHasSuffix(*i.PostalCodeHasSuffix))
+	}
+	if i.PostalCodeEqualFold != nil {
+		predicates = append(predicates, chart.PostalCodeEqualFold(*i.PostalCodeEqualFold))
+	}
+	if i.PostalCodeContainsFold != nil {
+		predicates = append(predicates, chart.PostalCodeContainsFold(*i.PostalCodeContainsFold))
+	}
+	if i.PrefectureID != nil {
+		predicates = append(predicates, chart.PrefectureIDEQ(*i.PrefectureID))
+	}
+	if i.PrefectureIDNEQ != nil {
+		predicates = append(predicates, chart.PrefectureIDNEQ(*i.PrefectureIDNEQ))
+	}
+	if len(i.PrefectureIDIn) > 0 {
+		predicates = append(predicates, chart.PrefectureIDIn(i.PrefectureIDIn...))
+	}
+	if len(i.PrefectureIDNotIn) > 0 {
+		predicates = append(predicates, chart.PrefectureIDNotIn(i.PrefectureIDNotIn...))
+	}
+	if i.PrefectureIDGT != nil {
+		predicates = append(predicates, chart.PrefectureIDGT(*i.PrefectureIDGT))
+	}
+	if i.PrefectureIDGTE != nil {
+		predicates = append(predicates, chart.PrefectureIDGTE(*i.PrefectureIDGTE))
+	}
+	if i.PrefectureIDLT != nil {
+		predicates = append(predicates, chart.PrefectureIDLT(*i.PrefectureIDLT))
+	}
+	if i.PrefectureIDLTE != nil {
+		predicates = append(predicates, chart.PrefectureIDLTE(*i.PrefectureIDLTE))
+	}
+	if i.Address != nil {
+		predicates = append(predicates, chart.AddressEQ(*i.Address))
+	}
+	if i.AddressNEQ != nil {
+		predicates = append(predicates, chart.AddressNEQ(*i.AddressNEQ))
+	}
+	if len(i.AddressIn) > 0 {
+		predicates = append(predicates, chart.AddressIn(i.AddressIn...))
+	}
+	if len(i.AddressNotIn) > 0 {
+		predicates = append(predicates, chart.AddressNotIn(i.AddressNotIn...))
+	}
+	if i.AddressGT != nil {
+		predicates = append(predicates, chart.AddressGT(*i.AddressGT))
+	}
+	if i.AddressGTE != nil {
+		predicates = append(predicates, chart.AddressGTE(*i.AddressGTE))
+	}
+	if i.AddressLT != nil {
+		predicates = append(predicates, chart.AddressLT(*i.AddressLT))
+	}
+	if i.AddressLTE != nil {
+		predicates = append(predicates, chart.AddressLTE(*i.AddressLTE))
+	}
+	if i.AddressContains != nil {
+		predicates = append(predicates, chart.AddressContains(*i.AddressContains))
+	}
+	if i.AddressHasPrefix != nil {
+		predicates = append(predicates, chart.AddressHasPrefix(*i.AddressHasPrefix))
+	}
+	if i.AddressHasSuffix != nil {
+		predicates = append(predicates, chart.AddressHasSuffix(*i.AddressHasSuffix))
+	}
+	if i.AddressEqualFold != nil {
+		predicates = append(predicates, chart.AddressEqualFold(*i.AddressEqualFold))
+	}
+	if i.AddressContainsFold != nil {
+		predicates = append(predicates, chart.AddressContainsFold(*i.AddressContainsFold))
+	}
+	if i.Tel != nil {
+		predicates = append(predicates, chart.TelEQ(*i.Tel))
+	}
+	if i.TelNEQ != nil {
+		predicates = append(predicates, chart.TelNEQ(*i.TelNEQ))
+	}
+	if len(i.TelIn) > 0 {
+		predicates = append(predicates, chart.TelIn(i.TelIn...))
+	}
+	if len(i.TelNotIn) > 0 {
+		predicates = append(predicates, chart.TelNotIn(i.TelNotIn...))
+	}
+	if i.TelGT != nil {
+		predicates = append(predicates, chart.TelGT(*i.TelGT))
+	}
+	if i.TelGTE != nil {
+		predicates = append(predicates, chart.TelGTE(*i.TelGTE))
+	}
+	if i.TelLT != nil {
+		predicates = append(predicates, chart.TelLT(*i.TelLT))
+	}
+	if i.TelLTE != nil {
+		predicates = append(predicates, chart.TelLTE(*i.TelLTE))
+	}
+	if i.TelContains != nil {
+		predicates = append(predicates, chart.TelContains(*i.TelContains))
+	}
+	if i.TelHasPrefix != nil {
+		predicates = append(predicates, chart.TelHasPrefix(*i.TelHasPrefix))
+	}
+	if i.TelHasSuffix != nil {
+		predicates = append(predicates, chart.TelHasSuffix(*i.TelHasSuffix))
+	}
+	if i.TelEqualFold != nil {
+		predicates = append(predicates, chart.TelEqualFold(*i.TelEqualFold))
+	}
+	if i.TelContainsFold != nil {
+		predicates = append(predicates, chart.TelContainsFold(*i.TelContainsFold))
+	}
+	if i.Email != nil {
+		predicates = append(predicates, chart.EmailEQ(*i.Email))
+	}
+	if i.EmailNEQ != nil {
+		predicates = append(predicates, chart.EmailNEQ(*i.EmailNEQ))
+	}
+	if len(i.EmailIn) > 0 {
+		predicates = append(predicates, chart.EmailIn(i.EmailIn...))
+	}
+	if len(i.EmailNotIn) > 0 {
+		predicates = append(predicates, chart.EmailNotIn(i.EmailNotIn...))
+	}
+	if i.EmailGT != nil {
+		predicates = append(predicates, chart.EmailGT(*i.EmailGT))
+	}
+	if i.EmailGTE != nil {
+		predicates = append(predicates, chart.EmailGTE(*i.EmailGTE))
+	}
+	if i.EmailLT != nil {
+		predicates = append(predicates, chart.EmailLT(*i.EmailLT))
+	}
+	if i.EmailLTE != nil {
+		predicates = append(predicates, chart.EmailLTE(*i.EmailLTE))
+	}
+	if i.EmailContains != nil {
+		predicates = append(predicates, chart.EmailContains(*i.EmailContains))
+	}
+	if i.EmailHasPrefix != nil {
+		predicates = append(predicates, chart.EmailHasPrefix(*i.EmailHasPrefix))
+	}
+	if i.EmailHasSuffix != nil {
+		predicates = append(predicates, chart.EmailHasSuffix(*i.EmailHasSuffix))
+	}
+	if i.EmailEqualFold != nil {
+		predicates = append(predicates, chart.EmailEqualFold(*i.EmailEqualFold))
+	}
+	if i.EmailContainsFold != nil {
+		predicates = append(predicates, chart.EmailContainsFold(*i.EmailContainsFold))
+	}
+
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("github.com/ta-toshio/bherb/ent: empty predicate ChartWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return chart.And(predicates...), nil
+	}
+}
 
 // TodoWhereInput represents a where input for filtering Todo queries.
 type TodoWhereInput struct {

@@ -9,6 +9,7 @@ import (
 
 	"github.com/ta-toshio/bherb/ent/migrate"
 
+	"github.com/ta-toshio/bherb/ent/chart"
 	"github.com/ta-toshio/bherb/ent/todo"
 	"github.com/ta-toshio/bherb/ent/user"
 
@@ -22,6 +23,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Chart is the client for interacting with the Chart builders.
+	Chart *ChartClient
 	// Todo is the client for interacting with the Todo builders.
 	Todo *TodoClient
 	// User is the client for interacting with the User builders.
@@ -41,6 +44,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Chart = NewChartClient(c.config)
 	c.Todo = NewTodoClient(c.config)
 	c.User = NewUserClient(c.config)
 }
@@ -76,6 +80,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:    ctx,
 		config: cfg,
+		Chart:  NewChartClient(cfg),
 		Todo:   NewTodoClient(cfg),
 		User:   NewUserClient(cfg),
 	}, nil
@@ -96,6 +101,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
 		config: cfg,
+		Chart:  NewChartClient(cfg),
 		Todo:   NewTodoClient(cfg),
 		User:   NewUserClient(cfg),
 	}, nil
@@ -104,7 +110,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Todo.
+//		Chart.
 //		Query().
 //		Count(ctx)
 //
@@ -127,8 +133,99 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Chart.Use(hooks...)
 	c.Todo.Use(hooks...)
 	c.User.Use(hooks...)
+}
+
+// ChartClient is a client for the Chart schema.
+type ChartClient struct {
+	config
+}
+
+// NewChartClient returns a client for the Chart from the given config.
+func NewChartClient(c config) *ChartClient {
+	return &ChartClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `chart.Hooks(f(g(h())))`.
+func (c *ChartClient) Use(hooks ...Hook) {
+	c.hooks.Chart = append(c.hooks.Chart, hooks...)
+}
+
+// Create returns a create builder for Chart.
+func (c *ChartClient) Create() *ChartCreate {
+	mutation := newChartMutation(c.config, OpCreate)
+	return &ChartCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Chart entities.
+func (c *ChartClient) CreateBulk(builders ...*ChartCreate) *ChartCreateBulk {
+	return &ChartCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Chart.
+func (c *ChartClient) Update() *ChartUpdate {
+	mutation := newChartMutation(c.config, OpUpdate)
+	return &ChartUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ChartClient) UpdateOne(ch *Chart) *ChartUpdateOne {
+	mutation := newChartMutation(c.config, OpUpdateOne, withChart(ch))
+	return &ChartUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ChartClient) UpdateOneID(id int) *ChartUpdateOne {
+	mutation := newChartMutation(c.config, OpUpdateOne, withChartID(id))
+	return &ChartUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Chart.
+func (c *ChartClient) Delete() *ChartDelete {
+	mutation := newChartMutation(c.config, OpDelete)
+	return &ChartDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ChartClient) DeleteOne(ch *Chart) *ChartDeleteOne {
+	return c.DeleteOneID(ch.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ChartClient) DeleteOneID(id int) *ChartDeleteOne {
+	builder := c.Delete().Where(chart.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ChartDeleteOne{builder}
+}
+
+// Query returns a query builder for Chart.
+func (c *ChartClient) Query() *ChartQuery {
+	return &ChartQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Chart entity by its id.
+func (c *ChartClient) Get(ctx context.Context, id int) (*Chart, error) {
+	return c.Query().Where(chart.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ChartClient) GetX(ctx context.Context, id int) *Chart {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ChartClient) Hooks() []Hook {
+	return c.hooks.Chart
 }
 
 // TodoClient is a client for the Todo schema.

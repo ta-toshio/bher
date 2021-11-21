@@ -70,6 +70,34 @@ type Todo implements Node {
   children: [Todo!]
 }
 
+type Chart implements Node {
+  id: ID!
+  patch: Boolean!
+  generation: Int!
+  gender: Int!
+  allergy: Int!
+  rash: Int!
+  sting: Int!
+  dye_when: Int!
+  dye_where: Int!
+  hena_when: Int!
+  rebonded_when: Int!
+  perm_when: Int!
+  treatment_when: Int!
+  notice_reason: Int!
+  last_name: String!
+  first_name: String!
+  last_name_hiragana: String!
+  first_name_hiragana: String!
+  postal_code: String!
+  prefecture_id: Int!
+  address: String!
+  tel: String!
+  email: String!
+  create_time: Time
+  update_time: Time
+}
+
 """
 Define an input type for the mutation below.
 https://graphql.org/learn/schema/#input-types
@@ -102,6 +130,33 @@ input UpdateTodoInput {
   removeChildIDs: [ID!]
 }
 
+
+input CreateChartInput {
+  patch: Boolean!
+  generation: Int!
+  gender: Int!
+  allergy: Int!
+  rash: Int!
+  sting: Int!
+  dye_when: Int!
+  dye_where: Int!
+  hena_when: Int!
+  rebonded_when: Int!
+  manicure_when: Int!
+  perm_when: Int!
+  treatment_when: Int!
+  notice_reason: Int!
+  last_name: String!
+  first_name: String!
+  last_name_hiragana: String!
+  first_name_hiragana: String!
+  postal_code: String
+  prefecture_id: Int
+  address: String
+  tel: String
+  email: String
+}
+
 """
 Define a mutation for creating todos.
 https://graphql.org/learn/queries/#mutations
@@ -110,6 +165,7 @@ type Mutation {
   createTodo(input: CreateTodoInput!): Todo!
   updateTodo(id: ID!, input: UpdateTodoInput!): Todo!
   updateTodos(ids: [ID!]!, input: UpdateTodoInput!): [Todo!]!
+  createChart(input: CreateChartInput!): Chart!
 }
 
 """Define a query for getting all todos and support the Node interface."""

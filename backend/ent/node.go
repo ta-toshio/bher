@@ -15,6 +15,7 @@ import (
 	"entgo.io/ent/dialect/sql/schema"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/hashicorp/go-multierror"
+	"github.com/ta-toshio/bherb/ent/chart"
 	"github.com/ta-toshio/bherb/ent/todo"
 	"github.com/ta-toshio/bherb/ent/user"
 	"golang.org/x/sync/semaphore"
@@ -45,6 +46,217 @@ type Edge struct {
 	Type string `json:"type,omitempty"` // edge type.
 	Name string `json:"name,omitempty"` // edge name.
 	IDs  []int  `json:"ids,omitempty"`  // node ids (where this edge point to).
+}
+
+func (c *Chart) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     c.ID,
+		Type:   "Chart",
+		Fields: make([]*Field, 25),
+		Edges:  make([]*Edge, 0),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(c.CreateTime); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "create_time",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.UpdateTime); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "update_time",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.Patch); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "bool",
+		Name:  "patch",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.Generation); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "int",
+		Name:  "generation",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.Gender); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "int",
+		Name:  "gender",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.Allergy); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "int",
+		Name:  "allergy",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.Rash); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
+		Type:  "int",
+		Name:  "rash",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.Sting); err != nil {
+		return nil, err
+	}
+	node.Fields[7] = &Field{
+		Type:  "int",
+		Name:  "sting",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.DyeWhen); err != nil {
+		return nil, err
+	}
+	node.Fields[8] = &Field{
+		Type:  "int",
+		Name:  "dye_when",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.DyeWhere); err != nil {
+		return nil, err
+	}
+	node.Fields[9] = &Field{
+		Type:  "int",
+		Name:  "dye_where",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.HenaWhen); err != nil {
+		return nil, err
+	}
+	node.Fields[10] = &Field{
+		Type:  "int",
+		Name:  "hena_when",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.RebondedWhen); err != nil {
+		return nil, err
+	}
+	node.Fields[11] = &Field{
+		Type:  "int",
+		Name:  "rebonded_when",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.ManicureWhen); err != nil {
+		return nil, err
+	}
+	node.Fields[12] = &Field{
+		Type:  "int",
+		Name:  "manicure_when",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.PermWhen); err != nil {
+		return nil, err
+	}
+	node.Fields[13] = &Field{
+		Type:  "int",
+		Name:  "perm_when",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.TreatmentWhen); err != nil {
+		return nil, err
+	}
+	node.Fields[14] = &Field{
+		Type:  "int",
+		Name:  "treatment_when",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.NoticeReason); err != nil {
+		return nil, err
+	}
+	node.Fields[15] = &Field{
+		Type:  "int",
+		Name:  "notice_reason",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.LastName); err != nil {
+		return nil, err
+	}
+	node.Fields[16] = &Field{
+		Type:  "string",
+		Name:  "last_name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.FirstName); err != nil {
+		return nil, err
+	}
+	node.Fields[17] = &Field{
+		Type:  "string",
+		Name:  "first_name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.LastNameHiragana); err != nil {
+		return nil, err
+	}
+	node.Fields[18] = &Field{
+		Type:  "string",
+		Name:  "last_name_hiragana",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.FirstNameHiragana); err != nil {
+		return nil, err
+	}
+	node.Fields[19] = &Field{
+		Type:  "string",
+		Name:  "first_name_hiragana",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.PostalCode); err != nil {
+		return nil, err
+	}
+	node.Fields[20] = &Field{
+		Type:  "string",
+		Name:  "postal_code",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.PrefectureID); err != nil {
+		return nil, err
+	}
+	node.Fields[21] = &Field{
+		Type:  "int",
+		Name:  "prefecture_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.Address); err != nil {
+		return nil, err
+	}
+	node.Fields[22] = &Field{
+		Type:  "string",
+		Name:  "address",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.Tel); err != nil {
+		return nil, err
+	}
+	node.Fields[23] = &Field{
+		Type:  "string",
+		Name:  "tel",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.Email); err != nil {
+		return nil, err
+	}
+	node.Fields[24] = &Field{
+		Type:  "string",
+		Name:  "email",
+		Value: string(buf),
+	}
+	return node, nil
 }
 
 func (t *Todo) Node(ctx context.Context) (node *Node, err error) {
@@ -196,6 +408,15 @@ func (c *Client) Noder(ctx context.Context, id int, opts ...NodeOption) (_ Noder
 
 func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error) {
 	switch table {
+	case chart.Table:
+		n, err := c.Chart.Query().
+			Where(chart.ID(id)).
+			CollectFields(ctx, "Chart").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case todo.Table:
 		n, err := c.Todo.Query().
 			Where(todo.ID(id)).
@@ -287,6 +508,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		idmap[id] = append(idmap[id], &noders[i])
 	}
 	switch table {
+	case chart.Table:
+		nodes, err := c.Chart.Query().
+			Where(chart.IDIn(ids...)).
+			CollectFields(ctx, "Chart").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
 	case todo.Table:
 		nodes, err := c.Todo.Query().
 			Where(todo.IDIn(ids...)).
