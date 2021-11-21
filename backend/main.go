@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"entgo.io/contrib/entgql"
+	"entgo.io/ent/dialect"
 	"log"
 	"net/http"
 	"os"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -24,8 +25,7 @@ import (
 const defaultPort = "8080"
 
 func newClient() *ent.Client {
-	// Create a Sqlite3 database connection.
-	client, err := ent.Open("sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+	client, err := ent.Open(dialect.MySQL,  "myuser:secret@tcp(db:3306)/mydatabase?parseTime=True")
 	if err != nil {
 		log.Fatalf("failed opening connection to sqlite: %v", err)
 	}
