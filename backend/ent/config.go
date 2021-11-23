@@ -26,7 +26,6 @@ type config struct {
 type hooks struct {
 	Chart []ent.Hook
 	Todo  []ent.Hook
-	User  []ent.Hook
 }
 
 // Options applies the options on the config object.

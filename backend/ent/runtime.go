@@ -8,7 +8,6 @@ import (
 	"github.com/ta-toshio/bherb/ent/chart"
 	"github.com/ta-toshio/bherb/ent/schema"
 	"github.com/ta-toshio/bherb/ent/todo"
-	"github.com/ta-toshio/bherb/ent/user"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -112,24 +111,4 @@ func init() {
 	todoDescPriority := todoFields[3].Descriptor()
 	// todo.DefaultPriority holds the default value on creation for the priority field.
 	todo.DefaultPriority = todoDescPriority.Default.(int)
-	userFields := schema.User{}.Fields()
-	_ = userFields
-	// userDescName is the schema descriptor for name field.
-	userDescName := userFields[0].Descriptor()
-	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	user.NameValidator = func() func(string) error {
-		validators := userDescName.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(name string) error {
-			for _, fn := range fns {
-				if err := fn(name); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
 }

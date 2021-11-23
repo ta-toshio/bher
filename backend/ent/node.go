@@ -17,7 +17,6 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/ta-toshio/bherb/ent/chart"
 	"github.com/ta-toshio/bherb/ent/todo"
-	"github.com/ta-toshio/bherb/ent/user"
 	"golang.org/x/sync/semaphore"
 )
 
@@ -322,25 +321,6 @@ func (t *Todo) Node(ctx context.Context) (node *Node, err error) {
 	return node, nil
 }
 
-func (u *User) Node(ctx context.Context) (node *Node, err error) {
-	node = &Node{
-		ID:     u.ID,
-		Type:   "User",
-		Fields: make([]*Field, 1),
-		Edges:  make([]*Edge, 0),
-	}
-	var buf []byte
-	if buf, err = json.Marshal(u.Name); err != nil {
-		return nil, err
-	}
-	node.Fields[0] = &Field{
-		Type:  "string",
-		Name:  "name",
-		Value: string(buf),
-	}
-	return node, nil
-}
-
 func (c *Client) Node(ctx context.Context, id int) (*Node, error) {
 	n, err := c.Noder(ctx, id)
 	if err != nil {
@@ -421,15 +401,6 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 		n, err := c.Todo.Query().
 			Where(todo.ID(id)).
 			CollectFields(ctx, "Todo").
-			Only(ctx)
-		if err != nil {
-			return nil, err
-		}
-		return n, nil
-	case user.Table:
-		n, err := c.User.Query().
-			Where(user.ID(id)).
-			CollectFields(ctx, "User").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -525,19 +496,6 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		nodes, err := c.Todo.Query().
 			Where(todo.IDIn(ids...)).
 			CollectFields(ctx, "Todo").
-			All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case user.Table:
-		nodes, err := c.User.Query().
-			Where(user.IDIn(ids...)).
-			CollectFields(ctx, "User").
 			All(ctx)
 		if err != nil {
 			return nil, err

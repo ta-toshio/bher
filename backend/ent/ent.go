@@ -10,7 +10,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/ta-toshio/bherb/ent/chart"
 	"github.com/ta-toshio/bherb/ent/todo"
-	"github.com/ta-toshio/bherb/ent/user"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -33,7 +32,6 @@ func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		chart.Table: chart.ValidColumn,
 		todo.Table:  todo.ValidColumn,
-		user.Table:  user.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {
