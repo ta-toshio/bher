@@ -2,6 +2,10 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 // import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import { useMutation } from '@apollo/client'
+import { CREATE_CHART } from '../../../queries/chart'
+import { CreateChartMutation, CreateChartMutationVariables } from '../../../generated/graphql'
+import { useCallback } from 'react'
 
 export interface IFormInput {
   my_checkbox: string[];
@@ -23,7 +27,7 @@ export interface IFormInput {
   first_name: string;
   last_name_hiragana: string;
   first_name_hiragana: string;
-  postal_code: number;
+  postal_code: string;
   prefecture: number;
   address: string;
   tel: string;
@@ -60,19 +64,19 @@ export const experiences = [
 
 export const noticeReasons = [
   {
-    value: "1",
+    value: '1',
     text: '店を直接見つけて',
   },
   {
-    value: "2",
+    value: '2',
     text: '口コミ',
   },
   {
-    value: "3",
+    value: '3',
     text: 'テレビ',
   },
   {
-    value: "99",
+    value: '99',
     text: 'その他',
   },
 ]
@@ -121,14 +125,14 @@ const schema = yup.object({
 }).required()
 
 const initialValues = {
-  patch: "1",
-  generation: "1",
-  gender: "1",
-  allergy: "0",
-  rash: "0",
-  sting: "0",
+  patch: '1',
+  generation: '1',
+  gender: '1',
+  allergy: '0',
+  rash: '0',
+  sting: '0',
   dye_when: 0,
-  dye_where: "0",
+  dye_where: '0',
   hena_when: 0,
   rebonded_when: 0,
   manicure_when: 0,
@@ -141,7 +145,44 @@ const useChartForm = () => {
     resolver: yupResolver(schema),
     defaultValues: initialValues,
   })
-  const onSubmit: SubmitHandler<IFormInput> = data => console.log(data)
+
+  const [createChart] = useMutation<CreateChartMutation,
+    CreateChartMutationVariables>(CREATE_CHART)
+
+  const onSubmit: SubmitHandler<IFormInput> = useCallback(async (data) => {
+
+    const res = await createChart({
+      variables: {
+        input: {
+          patch: data.patch === "1",
+          generation: +data.generation,
+          gender: +data.gender,
+          allergy: +data.allergy,
+          rash: +data.rash,
+          sting: +data.sting,
+          dye_when: +data.dye_when,
+          dye_where: +data.dye_where,
+          hena_when: +data.hena_when,
+          rebonded_when: +data.rebonded_when,
+          manicure_when: +data.manicure_when,
+          perm_when: +data.perm_when,
+          treatment_when: +data.treatment_when,
+          notice_reason: +data.notice_reason,
+          last_name: data.last_name,
+          first_name: data.first_name,
+          last_name_hiragana: data.last_name_hiragana,
+          first_name_hiragana: data.first_name_hiragana,
+          postal_code: data.postal_code,
+          prefecture_id: data.prefecture,
+          address: data.address,
+          tel: data.tel,
+          email: data.email,
+        }
+      },
+    })
+    console.log(res)
+  }, [createChart])
+
 
   console.log(errors)
 
