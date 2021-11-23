@@ -15,7 +15,7 @@ const useSearch = () => {
 
   const searchTodos = useCallback(() => {
     const call = async () => {
-      await fetchTodos({
+      fetchTodos({
         variables: {
           first: LIMIT,
           ...(after ? { after } : {}),
@@ -26,6 +26,12 @@ const useSearch = () => {
     call()
       .catch(e => console.log(e))
   }, [fetchTodos, after])
+
+  useEffect(() => {
+    if (data) {
+      setAfter(data.todos?.pageInfo.endCursor)
+    }
+  }, [data])
 
   return {
     searchTodos,
