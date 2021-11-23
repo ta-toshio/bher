@@ -20,6 +20,11 @@ enum Status {
   COMPLETED
 }
 
+enum Role {
+  STAFF
+  ADMIN
+}
+
 type PageInfo {
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!

@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/ta-toshio/bherb/ent/staff"
 	"github.com/ta-toshio/bherb/ent/todo"
 )
 
@@ -214,6 +215,72 @@ func (u *ChartUpdate) SetInput(i UpdateChartInput) *ChartUpdate {
 
 // SetInput applies the change-set in the UpdateChartInput on the update-one builder.
 func (u *ChartUpdateOne) SetInput(i UpdateChartInput) *ChartUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateStaffInput represents a mutation input for creating staffs.
+type CreateStaffInput struct {
+	Email     string
+	Name      string
+	Role      *staff.Role
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
+}
+
+// Mutate applies the CreateStaffInput on the StaffCreate builder.
+func (i *CreateStaffInput) Mutate(m *StaffCreate) {
+	m.SetEmail(i.Email)
+	m.SetName(i.Name)
+	if v := i.Role; v != nil {
+		m.SetRole(*v)
+	}
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateStaffInput on the create builder.
+func (c *StaffCreate) SetInput(i CreateStaffInput) *StaffCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateStaffInput represents a mutation input for updating staffs.
+type UpdateStaffInput struct {
+	Email     *string
+	Name      *string
+	Role      *staff.Role
+	UpdatedAt *time.Time
+}
+
+// Mutate applies the UpdateStaffInput on the StaffMutation.
+func (i *UpdateStaffInput) Mutate(m *StaffMutation) {
+	if v := i.Email; v != nil {
+		m.SetEmail(*v)
+	}
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Role; v != nil {
+		m.SetRole(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateStaffInput on the update builder.
+func (u *StaffUpdate) SetInput(i UpdateStaffInput) *StaffUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateStaffInput on the update-one builder.
+func (u *StaffUpdateOne) SetInput(i UpdateStaffInput) *StaffUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

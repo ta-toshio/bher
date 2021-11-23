@@ -10,6 +10,7 @@ import (
 	"github.com/ta-toshio/bherb/ent/migrate"
 
 	"github.com/ta-toshio/bherb/ent/chart"
+	"github.com/ta-toshio/bherb/ent/staff"
 	"github.com/ta-toshio/bherb/ent/todo"
 
 	"entgo.io/ent/dialect"
@@ -24,6 +25,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Chart is the client for interacting with the Chart builders.
 	Chart *ChartClient
+	// Staff is the client for interacting with the Staff builders.
+	Staff *StaffClient
 	// Todo is the client for interacting with the Todo builders.
 	Todo *TodoClient
 	// additional fields for node api
@@ -42,6 +45,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Chart = NewChartClient(c.config)
+	c.Staff = NewStaffClient(c.config)
 	c.Todo = NewTodoClient(c.config)
 }
 
@@ -77,6 +81,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:    ctx,
 		config: cfg,
 		Chart:  NewChartClient(cfg),
+		Staff:  NewStaffClient(cfg),
 		Todo:   NewTodoClient(cfg),
 	}, nil
 }
@@ -97,6 +102,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config: cfg,
 		Chart:  NewChartClient(cfg),
+		Staff:  NewStaffClient(cfg),
 		Todo:   NewTodoClient(cfg),
 	}, nil
 }
@@ -128,6 +134,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Chart.Use(hooks...)
+	c.Staff.Use(hooks...)
 	c.Todo.Use(hooks...)
 }
 
@@ -219,6 +226,96 @@ func (c *ChartClient) GetX(ctx context.Context, id int) *Chart {
 // Hooks returns the client hooks.
 func (c *ChartClient) Hooks() []Hook {
 	return c.hooks.Chart
+}
+
+// StaffClient is a client for the Staff schema.
+type StaffClient struct {
+	config
+}
+
+// NewStaffClient returns a client for the Staff from the given config.
+func NewStaffClient(c config) *StaffClient {
+	return &StaffClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `staff.Hooks(f(g(h())))`.
+func (c *StaffClient) Use(hooks ...Hook) {
+	c.hooks.Staff = append(c.hooks.Staff, hooks...)
+}
+
+// Create returns a create builder for Staff.
+func (c *StaffClient) Create() *StaffCreate {
+	mutation := newStaffMutation(c.config, OpCreate)
+	return &StaffCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Staff entities.
+func (c *StaffClient) CreateBulk(builders ...*StaffCreate) *StaffCreateBulk {
+	return &StaffCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Staff.
+func (c *StaffClient) Update() *StaffUpdate {
+	mutation := newStaffMutation(c.config, OpUpdate)
+	return &StaffUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *StaffClient) UpdateOne(s *Staff) *StaffUpdateOne {
+	mutation := newStaffMutation(c.config, OpUpdateOne, withStaff(s))
+	return &StaffUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *StaffClient) UpdateOneID(id int) *StaffUpdateOne {
+	mutation := newStaffMutation(c.config, OpUpdateOne, withStaffID(id))
+	return &StaffUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Staff.
+func (c *StaffClient) Delete() *StaffDelete {
+	mutation := newStaffMutation(c.config, OpDelete)
+	return &StaffDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *StaffClient) DeleteOne(s *Staff) *StaffDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *StaffClient) DeleteOneID(id int) *StaffDeleteOne {
+	builder := c.Delete().Where(staff.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &StaffDeleteOne{builder}
+}
+
+// Query returns a query builder for Staff.
+func (c *StaffClient) Query() *StaffQuery {
+	return &StaffQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Staff entity by its id.
+func (c *StaffClient) Get(ctx context.Context, id int) (*Staff, error) {
+	return c.Query().Where(staff.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *StaffClient) GetX(ctx context.Context, id int) *Staff {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *StaffClient) Hooks() []Hook {
+	return c.hooks.Staff
 }
 
 // TodoClient is a client for the Todo schema.

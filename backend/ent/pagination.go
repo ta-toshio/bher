@@ -15,6 +15,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/errcode"
 	"github.com/ta-toshio/bherb/ent/chart"
+	"github.com/ta-toshio/bherb/ent/staff"
 	"github.com/ta-toshio/bherb/ent/todo"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/vmihailenco/msgpack/v5"
@@ -514,6 +515,290 @@ func (c *Chart) ToEdge(order *ChartOrder) *ChartEdge {
 	return &ChartEdge{
 		Node:   c,
 		Cursor: order.Field.toCursor(c),
+	}
+}
+
+// StaffEdge is the edge representation of Staff.
+type StaffEdge struct {
+	Node   *Staff `json:"node"`
+	Cursor Cursor `json:"cursor"`
+}
+
+// StaffConnection is the connection containing edges to Staff.
+type StaffConnection struct {
+	Edges      []*StaffEdge `json:"edges"`
+	PageInfo   PageInfo     `json:"pageInfo"`
+	TotalCount int          `json:"totalCount"`
+}
+
+// StaffPaginateOption enables pagination customization.
+type StaffPaginateOption func(*staffPager) error
+
+// WithStaffOrder configures pagination ordering.
+func WithStaffOrder(order *StaffOrder) StaffPaginateOption {
+	if order == nil {
+		order = DefaultStaffOrder
+	}
+	o := *order
+	return func(pager *staffPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultStaffOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithStaffFilter configures pagination filter.
+func WithStaffFilter(filter func(*StaffQuery) (*StaffQuery, error)) StaffPaginateOption {
+	return func(pager *staffPager) error {
+		if filter == nil {
+			return errors.New("StaffQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type staffPager struct {
+	order  *StaffOrder
+	filter func(*StaffQuery) (*StaffQuery, error)
+}
+
+func newStaffPager(opts []StaffPaginateOption) (*staffPager, error) {
+	pager := &staffPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultStaffOrder
+	}
+	return pager, nil
+}
+
+func (p *staffPager) applyFilter(query *StaffQuery) (*StaffQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *staffPager) toCursor(s *Staff) Cursor {
+	return p.order.Field.toCursor(s)
+}
+
+func (p *staffPager) applyCursors(query *StaffQuery, after, before *Cursor) *StaffQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultStaffOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *staffPager) applyOrder(query *StaffQuery, reverse bool) *StaffQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultStaffOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultStaffOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Staff.
+func (s *StaffQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...StaffPaginateOption,
+) (*StaffConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newStaffPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if s, err = pager.applyFilter(s); err != nil {
+		return nil, err
+	}
+
+	conn := &StaffConnection{Edges: []*StaffEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := s.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := s.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	s = pager.applyCursors(s, after, before)
+	s = pager.applyOrder(s, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		s = s.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		s = s.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := s.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *Staff
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Staff {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Staff {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*StaffEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &StaffEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+var (
+	// StaffOrderFieldCreatedAt orders Staff by created_at.
+	StaffOrderFieldCreatedAt = &StaffOrderField{
+		field: staff.FieldCreatedAt,
+		toCursor: func(s *Staff) Cursor {
+			return Cursor{
+				ID:    s.ID,
+				Value: s.CreatedAt,
+			}
+		},
+	}
+	// StaffOrderFieldUpdatedAt orders Staff by updated_at.
+	StaffOrderFieldUpdatedAt = &StaffOrderField{
+		field: staff.FieldUpdatedAt,
+		toCursor: func(s *Staff) Cursor {
+			return Cursor{
+				ID:    s.ID,
+				Value: s.UpdatedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f StaffOrderField) String() string {
+	var str string
+	switch f.field {
+	case staff.FieldCreatedAt:
+		str = "CREATED_AT"
+	case staff.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f StaffOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *StaffOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("StaffOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *StaffOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *StaffOrderFieldUpdatedAt
+	default:
+		return fmt.Errorf("%s is not a valid StaffOrderField", str)
+	}
+	return nil
+}
+
+// StaffOrderField defines the ordering field of Staff.
+type StaffOrderField struct {
+	field    string
+	toCursor func(*Staff) Cursor
+}
+
+// StaffOrder defines the ordering of Staff.
+type StaffOrder struct {
+	Direction OrderDirection   `json:"direction"`
+	Field     *StaffOrderField `json:"field"`
+}
+
+// DefaultStaffOrder is the default ordering of Staff.
+var DefaultStaffOrder = &StaffOrder{
+	Direction: OrderDirectionAsc,
+	Field: &StaffOrderField{
+		field: staff.FieldID,
+		toCursor: func(s *Staff) Cursor {
+			return Cursor{ID: s.ID}
+		},
+	},
+}
+
+// ToEdge converts Staff into StaffEdge.
+func (s *Staff) ToEdge(order *StaffOrder) *StaffEdge {
+	if order == nil {
+		order = DefaultStaffOrder
+	}
+	return &StaffEdge{
+		Node:   s,
+		Cursor: order.Field.toCursor(s),
 	}
 }
 

@@ -16,6 +16,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/hashicorp/go-multierror"
 	"github.com/ta-toshio/bherb/ent/chart"
+	"github.com/ta-toshio/bherb/ent/staff"
 	"github.com/ta-toshio/bherb/ent/todo"
 	"golang.org/x/sync/semaphore"
 )
@@ -258,6 +259,57 @@ func (c *Chart) Node(ctx context.Context) (node *Node, err error) {
 	return node, nil
 }
 
+func (s *Staff) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     s.ID,
+		Type:   "Staff",
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 0),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(s.Email); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "string",
+		Name:  "email",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(s.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(s.Role); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "staff.Role",
+		Name:  "role",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(s.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(s.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	return node, nil
+}
+
 func (t *Todo) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     t.ID,
@@ -397,6 +449,15 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 			return nil, err
 		}
 		return n, nil
+	case staff.Table:
+		n, err := c.Staff.Query().
+			Where(staff.ID(id)).
+			CollectFields(ctx, "Staff").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case todo.Table:
 		n, err := c.Todo.Query().
 			Where(todo.ID(id)).
@@ -483,6 +544,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		nodes, err := c.Chart.Query().
 			Where(chart.IDIn(ids...)).
 			CollectFields(ctx, "Chart").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case staff.Table:
+		nodes, err := c.Staff.Query().
+			Where(staff.IDIn(ids...)).
+			CollectFields(ctx, "Staff").
 			All(ctx)
 		if err != nil {
 			return nil, err

@@ -21,6 +21,18 @@ func (c *ChartQuery) collectField(ctx *graphql.OperationContext, field graphql.C
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (s *StaffQuery) CollectFields(ctx context.Context, satisfies ...string) *StaffQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		s = s.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return s
+}
+
+func (s *StaffQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *StaffQuery {
+	return s
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (t *TodoQuery) CollectFields(ctx context.Context, satisfies ...string) *TodoQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		t = t.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)

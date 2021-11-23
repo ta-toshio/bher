@@ -7,6 +7,7 @@ import (
 
 	"github.com/ta-toshio/bherb/ent/chart"
 	"github.com/ta-toshio/bherb/ent/schema"
+	"github.com/ta-toshio/bherb/ent/staff"
 	"github.com/ta-toshio/bherb/ent/todo"
 )
 
@@ -97,6 +98,24 @@ func init() {
 	chartDescPrefectureID := chartFields[19].Descriptor()
 	// chart.DefaultPrefectureID holds the default value on creation for the prefecture_id field.
 	chart.DefaultPrefectureID = chartDescPrefectureID.Default.(int)
+	staffFields := schema.Staff{}.Fields()
+	_ = staffFields
+	// staffDescEmail is the schema descriptor for email field.
+	staffDescEmail := staffFields[0].Descriptor()
+	// staff.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	staff.EmailValidator = staffDescEmail.Validators[0].(func(string) error)
+	// staffDescName is the schema descriptor for name field.
+	staffDescName := staffFields[1].Descriptor()
+	// staff.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	staff.NameValidator = staffDescName.Validators[0].(func(string) error)
+	// staffDescCreatedAt is the schema descriptor for created_at field.
+	staffDescCreatedAt := staffFields[3].Descriptor()
+	// staff.DefaultCreatedAt holds the default value on creation for the created_at field.
+	staff.DefaultCreatedAt = staffDescCreatedAt.Default.(func() time.Time)
+	// staffDescUpdatedAt is the schema descriptor for updated_at field.
+	staffDescUpdatedAt := staffFields[4].Descriptor()
+	// staff.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	staff.DefaultUpdatedAt = staffDescUpdatedAt.Default.(func() time.Time)
 	todoFields := schema.Todo{}.Fields()
 	_ = todoFields
 	// todoDescText is the schema descriptor for text field.

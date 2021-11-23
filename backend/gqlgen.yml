@@ -53,3 +53,6 @@ models:
   Status:
     model:
       - github.com/ta-toshio/bherb/ent/todo.Status
+  Role:
+    model:
+      - github.com/ta-toshio/bherb/ent/staff.Role

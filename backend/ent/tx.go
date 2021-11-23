@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Chart is the client for interacting with the Chart builders.
 	Chart *ChartClient
+	// Staff is the client for interacting with the Staff builders.
+	Staff *StaffClient
 	// Todo is the client for interacting with the Todo builders.
 	Todo *TodoClient
 
@@ -152,6 +154,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Chart = NewChartClient(tx.config)
+	tx.Staff = NewStaffClient(tx.config)
 	tx.Todo = NewTodoClient(tx.config)
 }
 
