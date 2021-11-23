@@ -2,6 +2,7 @@ import React from 'react'
 import type { AppProps } from 'next/app'
 import { ApolloProvider } from '@apollo/client'
 import { useApollo } from '../app/withApollo'
+import { wrapper } from '../app/store'
 import '../styles/globals.scss'
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -13,4 +14,4 @@ function MyApp({ Component, pageProps }: AppProps) {
     </ApolloProvider>
   )
 }
-export default MyApp
+export default wrapper.withRedux(MyApp)
