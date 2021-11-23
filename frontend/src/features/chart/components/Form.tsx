@@ -7,9 +7,7 @@ import useChartForm, {
   noticeReasons, whenOptions,
 } from '../hooks/useForm'
 
-
 const Form: React.FC = () => {
-
   const {
     register,
     handleSubmit,

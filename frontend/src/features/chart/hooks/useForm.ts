@@ -122,7 +122,7 @@ const schema = yup.object({
   last_name: yup.string().required(),
   first_name_hiragana: yup.string().required(),
   last_name_hiragana: yup.string().required(),
-}).required()
+})
 
 const initialValues = {
   patch: '1',
@@ -151,7 +151,7 @@ const useChartForm = () => {
 
   const onSubmit: SubmitHandler<IFormInput> = useCallback(async (data) => {
 
-    const res = await createChart({
+    await createChart({
       variables: {
         input: {
           patch: data.patch === "1",
@@ -180,11 +180,7 @@ const useChartForm = () => {
         }
       },
     })
-    console.log(res)
   }, [createChart])
-
-
-  console.log(errors)
 
   return {
     register,
