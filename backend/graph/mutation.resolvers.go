@@ -5,10 +5,12 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ta-toshio/bherb/ent"
 	"github.com/ta-toshio/bherb/ent/todo"
 	"github.com/ta-toshio/bherb/graph/generated"
+	"github.com/ta-toshio/bherb/graph/model"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input ent.CreateTodoInput) (*ent.Todo, error) {
@@ -35,6 +37,23 @@ func (r *mutationResolver) CreateChart(ctx context.Context, input ent.CreateChar
 		Create().
 		SetInput(input).
 		Save(ctx)
+}
+
+func (r *mutationResolver) CreateStaff(ctx context.Context, input model.CreateStaffInput) (*ent.Staff, error) {
+	i := ent.CreateStaffInput{
+		UID:   input.UID,
+		Email: input.Email,
+		Name:  input.Name,
+	}
+	staff, err := ent.FromContext(ctx).Staff.
+		Create().
+		SetInput(i).
+		Save(ctx)
+
+	if err != nil && input.Firebase {
+		fmt.Println("create firebase account")
+	}
+	return staff, err
 }
 
 // Mutation returns generated.MutationResolver implementation.

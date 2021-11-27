@@ -16,10 +16,6 @@ type TodoEdge {
     cursor: Cursor!
 }
 
-"""
-Define an object type and map it later to the generated Ent model.
-https://graphql.org/learn/schema/#object-types-and-fields
-"""
 type Todo implements Node {
     id: ID!
     createdAt: Time
@@ -58,3 +54,12 @@ type Chart implements Node {
     update_time: Time
 }
 
+type Staff {
+    id: ID!
+    uid: String!
+    email: String!
+    name: String!
+    role: Role!
+    createdAt: Time!
+    updatedAt: Time!
+}

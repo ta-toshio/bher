@@ -62,3 +62,11 @@ input CreateChartInput {
     email: String
 }
 
+
+input CreateStaffInput {
+    uid: String!
+    email: String!
+    name: String!
+    role: Role!
+    firebase: Boolean!
+}
