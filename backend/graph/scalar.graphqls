@@ -1,0 +1,53 @@
+"""Define an required authentification"""
+directive @auth(type: Auth!) on FIELD_DEFINITION
+
+interface Node {
+    id: ID!
+}
+
+"""Maps a Time GraphQL scalar to a Go time.Time struct."""
+scalar Time
+
+"""
+Define a Relay Cursor type:
+https://relay.dev/graphql/connections.htm#sec-Cursor
+"""
+scalar Cursor
+
+"""Define authenticated type"""
+enum Auth {
+    STAFF
+    USER
+    ANY
+}
+
+"""
+Define an enumeration type and map it later to Ent enum (Go type).
+https://graphql.org/learn/schema/#enumeration-types
+"""
+enum Status {
+    IN_PROGRESS
+    COMPLETED
+}
+
+"""Define loggedIn user type."""
+enum Role {
+    STAFF
+    ADMIN
+}
+
+
+"""The following enums are matched the entgql annotations in the ent/schema."""
+enum TodoOrderField {
+    CREATED_AT
+    PRIORITY
+    STATUS
+    TEXT
+}
+
+"""Define Order direction."""
+enum OrderDirection {
+    ASC
+    DESC
+}
+

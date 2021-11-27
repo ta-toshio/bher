@@ -1,0 +1,64 @@
+input TodoOrder {
+    direction: OrderDirection!
+    field: TodoOrderField
+}
+
+"""
+Define an input type for the mutation below.
+https://graphql.org/learn/schema/#input-types
+
+Note that, this type is mapped to the generated
+input type in mutation_input.go.
+"""
+input CreateTodoInput {
+    status: Status! = IN_PROGRESS
+    priority: Int
+    text: String
+    parentID: ID
+    ChildIDs: [ID!]
+}
+
+"""
+Define an input type for the mutation below.
+https://graphql.org/learn/schema/#input-types
+
+Note that, this type is mapped to the generated
+input type in mutation_input.go.
+"""
+input UpdateTodoInput {
+    status: Status
+    priority: Int
+    text: String
+    parentID: ID
+    clearParent: Boolean
+    addChildIDs: [ID!]
+    removeChildIDs: [ID!]
+}
+
+
+input CreateChartInput {
+    patch: Boolean!
+    generation: Int!
+    gender: Int!
+    allergy: Int!
+    rash: Int!
+    sting: Int!
+    dye_when: Int!
+    dye_where: Int!
+    hena_when: Int!
+    rebonded_when: Int!
+    manicure_when: Int!
+    perm_when: Int!
+    treatment_when: Int!
+    notice_reason: Int!
+    last_name: String!
+    first_name: String!
+    last_name_hiragana: String!
+    first_name_hiragana: String!
+    postal_code: String
+    prefecture_id: Int
+    address: String
+    tel: String
+    email: String
+}
+

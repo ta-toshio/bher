@@ -1,0 +1,19 @@
+"""Define a query for getting all todos and support the Node interface."""
+type Query {
+    todos(
+        after: Cursor,
+        first: Int,
+        before: Cursor,
+        last: Int,
+        orderBy: TodoOrder,
+        where: TodoWhereInput,
+    ): TodoConnection
+    todosWithAuth(
+        after: Cursor,
+        first: Int,
+        before: Cursor,
+        last: Int,
+        orderBy: TodoOrder,
+        where: TodoWhereInput,
+    ): TodoConnection @auth(type: ANY)
+}

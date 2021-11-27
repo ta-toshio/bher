@@ -1031,8 +1031,108 @@ input StaffWhereInput {
   idLTE: ID
 }
 `, BuiltIn: false},
-	{Name: "graph/schema.graphqls", Input: `interface Node {
-  id: ID!
+	{Name: "graph/input.graphqls", Input: `input TodoOrder {
+    direction: OrderDirection!
+    field: TodoOrderField
+}
+
+"""
+Define an input type for the mutation below.
+https://graphql.org/learn/schema/#input-types
+
+Note that, this type is mapped to the generated
+input type in mutation_input.go.
+"""
+input CreateTodoInput {
+    status: Status! = IN_PROGRESS
+    priority: Int
+    text: String
+    parentID: ID
+    ChildIDs: [ID!]
+}
+
+"""
+Define an input type for the mutation below.
+https://graphql.org/learn/schema/#input-types
+
+Note that, this type is mapped to the generated
+input type in mutation_input.go.
+"""
+input UpdateTodoInput {
+    status: Status
+    priority: Int
+    text: String
+    parentID: ID
+    clearParent: Boolean
+    addChildIDs: [ID!]
+    removeChildIDs: [ID!]
+}
+
+
+input CreateChartInput {
+    patch: Boolean!
+    generation: Int!
+    gender: Int!
+    allergy: Int!
+    rash: Int!
+    sting: Int!
+    dye_when: Int!
+    dye_where: Int!
+    hena_when: Int!
+    rebonded_when: Int!
+    manicure_when: Int!
+    perm_when: Int!
+    treatment_when: Int!
+    notice_reason: Int!
+    last_name: String!
+    first_name: String!
+    last_name_hiragana: String!
+    first_name_hiragana: String!
+    postal_code: String
+    prefecture_id: Int
+    address: String
+    tel: String
+    email: String
+}
+
+`, BuiltIn: false},
+	{Name: "graph/mutation.graphqls", Input: `"""
+Define a mutation for creating todos.
+https://graphql.org/learn/queries/#mutations
+"""
+type Mutation {
+    createTodo(input: CreateTodoInput!): Todo!
+    updateTodo(id: ID!, input: UpdateTodoInput!): Todo!
+    updateTodos(ids: [ID!]!, input: UpdateTodoInput!): [Todo!]!
+    createChart(input: CreateChartInput!): Chart!
+}
+
+`, BuiltIn: false},
+	{Name: "graph/query.graphqls", Input: `"""Define a query for getting all todos and support the Node interface."""
+type Query {
+    todos(
+        after: Cursor,
+        first: Int,
+        before: Cursor,
+        last: Int,
+        orderBy: TodoOrder,
+        where: TodoWhereInput,
+    ): TodoConnection
+    todosWithAuth(
+        after: Cursor,
+        first: Int,
+        before: Cursor,
+        last: Int,
+        orderBy: TodoOrder,
+        where: TodoWhereInput,
+    ): TodoConnection @auth(type: ANY)
+}
+`, BuiltIn: false},
+	{Name: "graph/scalar.graphqls", Input: `"""Define an required authentification"""
+directive @auth(type: Auth!) on FIELD_DEFINITION
+
+interface Node {
+    id: ID!
 }
 
 """Maps a Time GraphQL scalar to a Go time.Time struct."""
@@ -1044,13 +1144,11 @@ https://relay.dev/graphql/connections.htm#sec-Cursor
 """
 scalar Cursor
 
-"""Define an required authentification"""
-directive @auth(type: Auth!) on FIELD_DEFINITION
-
+"""Define authenticated type"""
 enum Auth {
-  STAFF
-  USER
-  ANY
+    STAFF
+    USER
+    ANY
 }
 
 """
@@ -1058,49 +1156,48 @@ Define an enumeration type and map it later to Ent enum (Go type).
 https://graphql.org/learn/schema/#enumeration-types
 """
 enum Status {
-  IN_PROGRESS
-  COMPLETED
+    IN_PROGRESS
+    COMPLETED
 }
 
+"""Define loggedIn user type."""
 enum Role {
-  STAFF
-  ADMIN
+    STAFF
+    ADMIN
 }
 
-type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: Cursor
-  endCursor: Cursor
-}
-
-type TodoConnection {
-  totalCount: Int!
-  pageInfo: PageInfo!
-  edges: [TodoEdge]
-}
-
-type TodoEdge {
-  node: Todo
-  cursor: Cursor!
-}
 
 """The following enums are matched the entgql annotations in the ent/schema."""
 enum TodoOrderField {
-  CREATED_AT
-  PRIORITY
-  STATUS
-  TEXT
+    CREATED_AT
+    PRIORITY
+    STATUS
+    TEXT
 }
 
+"""Define Order direction."""
 enum OrderDirection {
-  ASC
-  DESC
+    ASC
+    DESC
 }
 
-input TodoOrder {
-  direction: OrderDirection!
-  field: TodoOrderField
+`, BuiltIn: false},
+	{Name: "graph/type.graphqls", Input: `type PageInfo {
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: Cursor
+    endCursor: Cursor
+}
+
+type TodoConnection {
+    totalCount: Int!
+    pageInfo: PageInfo!
+    edges: [TodoEdge]
+}
+
+type TodoEdge {
+    node: Todo
+    cursor: Cursor!
 }
 
 """
@@ -1108,132 +1205,43 @@ Define an object type and map it later to the generated Ent model.
 https://graphql.org/learn/schema/#object-types-and-fields
 """
 type Todo implements Node {
-  id: ID!
-  createdAt: Time
-  status: Status!
-  priority: Int!
-  text: String!
-  parent: Todo
-  children: [Todo!]
+    id: ID!
+    createdAt: Time
+    status: Status!
+    priority: Int!
+    text: String!
+    parent: Todo
+    children: [Todo!]
 }
 
 type Chart implements Node {
-  id: ID!
-  patch: Boolean!
-  generation: Int!
-  gender: Int!
-  allergy: Int!
-  rash: Int!
-  sting: Int!
-  dye_when: Int!
-  dye_where: Int!
-  hena_when: Int!
-  rebonded_when: Int!
-  perm_when: Int!
-  treatment_when: Int!
-  notice_reason: Int!
-  last_name: String!
-  first_name: String!
-  last_name_hiragana: String!
-  first_name_hiragana: String!
-  postal_code: String!
-  prefecture_id: Int!
-  address: String!
-  tel: String!
-  email: String!
-  create_time: Time
-  update_time: Time
+    id: ID!
+    patch: Boolean!
+    generation: Int!
+    gender: Int!
+    allergy: Int!
+    rash: Int!
+    sting: Int!
+    dye_when: Int!
+    dye_where: Int!
+    hena_when: Int!
+    rebonded_when: Int!
+    perm_when: Int!
+    treatment_when: Int!
+    notice_reason: Int!
+    last_name: String!
+    first_name: String!
+    last_name_hiragana: String!
+    first_name_hiragana: String!
+    postal_code: String!
+    prefecture_id: Int!
+    address: String!
+    tel: String!
+    email: String!
+    create_time: Time
+    update_time: Time
 }
 
-"""
-Define an input type for the mutation below.
-https://graphql.org/learn/schema/#input-types
-
-Note that, this type is mapped to the generated
-input type in mutation_input.go.
-"""
-input CreateTodoInput {
-  status: Status! = IN_PROGRESS
-  priority: Int
-  text: String
-  parentID: ID
-  ChildIDs: [ID!]
-}
-
-"""
-Define an input type for the mutation below.
-https://graphql.org/learn/schema/#input-types
-
-Note that, this type is mapped to the generated
-input type in mutation_input.go.
-"""
-input UpdateTodoInput {
-  status: Status
-  priority: Int
-  text: String
-  parentID: ID
-  clearParent: Boolean
-  addChildIDs: [ID!]
-  removeChildIDs: [ID!]
-}
-
-
-input CreateChartInput {
-  patch: Boolean!
-  generation: Int!
-  gender: Int!
-  allergy: Int!
-  rash: Int!
-  sting: Int!
-  dye_when: Int!
-  dye_where: Int!
-  hena_when: Int!
-  rebonded_when: Int!
-  manicure_when: Int!
-  perm_when: Int!
-  treatment_when: Int!
-  notice_reason: Int!
-  last_name: String!
-  first_name: String!
-  last_name_hiragana: String!
-  first_name_hiragana: String!
-  postal_code: String
-  prefecture_id: Int
-  address: String
-  tel: String
-  email: String
-}
-
-"""
-Define a mutation for creating todos.
-https://graphql.org/learn/queries/#mutations
-"""
-type Mutation {
-  createTodo(input: CreateTodoInput!): Todo!
-  updateTodo(id: ID!, input: UpdateTodoInput!): Todo!
-  updateTodos(ids: [ID!]!, input: UpdateTodoInput!): [Todo!]!
-  createChart(input: CreateChartInput!): Chart!
-}
-
-"""Define a query for getting all todos and support the Node interface."""
-type Query {
-  todos(
-    after: Cursor,
-    first: Int,
-    before: Cursor,
-    last: Int,
-    orderBy: TodoOrder,
-    where: TodoWhereInput,
-  ): TodoConnection
-  todosWithAuth(
-    after: Cursor,
-    first: Int,
-    before: Cursor,
-    last: Int,
-    orderBy: TodoOrder,
-    where: TodoWhereInput,
-  ): TodoConnection @auth(type: ANY)
-}
 `, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)

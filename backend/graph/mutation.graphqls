@@ -1,0 +1,11 @@
+"""
+Define a mutation for creating todos.
+https://graphql.org/learn/queries/#mutations
+"""
+type Mutation {
+    createTodo(input: CreateTodoInput!): Todo!
+    updateTodo(id: ID!, input: UpdateTodoInput!): Todo!
+    updateTodos(ids: [ID!]!, input: UpdateTodoInput!): [Todo!]!
+    createChart(input: CreateChartInput!): Chart!
+}
+
