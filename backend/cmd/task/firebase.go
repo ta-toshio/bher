@@ -1,0 +1,20 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"github.com/ta-toshio/bherb/service"
+)
+
+func main() {
+	client, err := service.NewFirebaseClient()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	ctx := context.Background()
+	_, err = client.VerifyIDToken(ctx, "eyJhbGciOiJSUzI1NiIsImtpZCI6IjJlMzZhMWNiZDBiMjE2NjYxOTViZGIxZGZhMDFiNGNkYjAwNzg3OWQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vdGEtYmhlcmItbG9jYWwiLCJhdWQiOiJ0YS1iaGVyYi1sb2NhbCIsImF1dGhfdGltZSI6MTYzNzg0NDQ4NSwidXNlcl9pZCI6ImNtRkNRQndtYjVmY1Q0Z3cxR09ZcURPekFLOTIiLCJzdWIiOiJjbUZDUUJ3bWI1ZmNUNGd3MUdPWXFET3pBSzkyIiwiaWF0IjoxNjM3ODQ0NDg1LCJleHAiOjE2Mzc4NDgwODUsImVtYWlsIjoidGEudG9zaGlvLmFwcEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsidGEudG9zaGlvLmFwcEBnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.luesJHHzXMrj9sWs-j9-e4GFmjizv-SknUwpXjPHFTBqXXhHtnrf0Xl94UNY094YT49DElwCaYclMZ-F_YBTSTJwACHXUzr5SwbbxNE85MCTlwohE8RGFnlsaGuFNhq1OySH8q-3D961OSbUc0Z45M_2CBiCBoTTIOJjnA2d6dZeYYcIWvLsQUQHuAtIlNnJ5xw0s11kZ46nTGFgM6QUDkZO885996cwJsKV21Ogl0jS1KnmtzSsnxf88aFcT9-HZ8VAzBCw1voTDu6p9JFuWn1mrRynwP4KXM04bD9qzza5Fgxd4QwIfSV3FaqXDDkL9FuweXIA5VJPAHkjMrbBWg")
+	fmt.Println(err)
+	fmt.Println("aaa")
+}
