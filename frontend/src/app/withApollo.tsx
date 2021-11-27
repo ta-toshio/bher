@@ -11,7 +11,6 @@ let apolloClient
 
 function createApolloClient(options) {
   const csrfLink = setContext(async (_, { headers }) => {
-
     return {
       headers: {
         ...headers,

@@ -25,7 +25,7 @@ import (
 const defaultPort = "8080"
 
 func newClient() *ent.Client {
-	client, err := ent.Open(dialect.MySQL,  "myuser:secret@tcp(db:3306)/mydatabase?parseTime=True")
+	client, err := ent.Open(dialect.MySQL, "myuser:secret@tcp(db:3306)/mydatabase?parseTime=True")
 	if err != nil {
 		log.Fatalf("failed opening connection to sqlite: %v", err)
 	}
@@ -34,7 +34,7 @@ func newClient() *ent.Client {
 	if err := client.Schema.Create(
 		context.Background(),
 		//migrate.WithGlobalUniqueID(true),
-		); err != nil {
+	); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 
@@ -57,6 +57,7 @@ func main() {
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowCredentials: true,
+		AllowedHeaders:   []string{"Authorization", "Content-Type", "X-Requested-With"},
 		Debug:            true,
 	}).Handler)
 

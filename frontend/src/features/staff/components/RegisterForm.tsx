@@ -22,6 +22,20 @@ const Form: React.FC = () => {
               <form onSubmit={handleSubmit(onSubmit)}>
 
                 <div className='field mb-5'>
+                  <label className='label'>名前</label>
+                  <div className='control'>
+                    <input
+                      {...register('name', {})}
+                      type='text'
+                      className='input mb-2'
+                    />
+                  </div>
+                  {errors && errors.name && (
+                    <p className='help is-danger'>{errors.name.message}</p>
+                  )}
+                </div>
+
+                <div className='field mb-5'>
                   <label className='label'>メールアドレス</label>
                   <div className='control'>
                     <input
