@@ -11,6 +11,15 @@ https://relay.dev/graphql/connections.htm#sec-Cursor
 """
 scalar Cursor
 
+"""Define an required authentification"""
+directive @auth(type: Auth!) on FIELD_DEFINITION
+
+enum Auth {
+  STAFF
+  USER
+  ANY
+}
+
 """
 Define an enumeration type and map it later to Ent enum (Go type).
 https://graphql.org/learn/schema/#enumeration-types
@@ -183,4 +192,12 @@ type Query {
     orderBy: TodoOrder,
     where: TodoWhereInput,
   ): TodoConnection
+  todosWithAuth(
+    after: Cursor,
+    first: Int,
+    before: Cursor,
+    last: Int,
+    orderBy: TodoOrder,
+    where: TodoWhereInput,
+  ): TodoConnection @auth(type: ANY)
 }

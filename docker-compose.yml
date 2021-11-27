@@ -12,6 +12,8 @@ services:
     ports:
       - "8400:8080"
     tty: true
+    environment:
+      - ROOT_DIR=/app
 
   db:
     build:

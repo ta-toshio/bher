@@ -15,6 +15,9 @@ type Staff struct {
 // Fields of the Staff.
 func (Staff) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("uid").
+			NotEmpty().
+			Unique(),
 		field.String("email").
 			NotEmpty().
 			Unique(),

@@ -4,6 +4,7 @@ import (
 	"context"
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent/dialect"
+	"github.com/ta-toshio/bherb/http/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -17,7 +18,6 @@ import (
 	"github.com/rs/cors"
 
 	"github.com/ta-toshio/bherb/ent"
-	"github.com/ta-toshio/bherb/ent/migrate"
 	"github.com/ta-toshio/bherb/graph"
 	"github.com/ta-toshio/bherb/graph/generated"
 )
@@ -33,7 +33,7 @@ func newClient() *ent.Client {
 	// Run the auto migration tool.
 	if err := client.Schema.Create(
 		context.Background(),
-		migrate.WithGlobalUniqueID(true),
+		//migrate.WithGlobalUniqueID(true),
 		); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
@@ -60,9 +60,10 @@ func main() {
 		Debug:            true,
 	}).Handler)
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
-		Client: client,
-	}}))
+	// Add loggedIn user to context
+	router.Use(middleware.AuthMiddleware(client))
+
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(graph.NewConfig(client)))
 	srv.Use(entgql.Transactioner{TxOpener: client})
 
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))

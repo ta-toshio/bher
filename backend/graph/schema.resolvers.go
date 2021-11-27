@@ -5,6 +5,8 @@ package graph
 
 import (
 	"context"
+	"fmt"
+	"github.com/ta-toshio/bherb/http/middleware"
 
 	"github.com/ta-toshio/bherb/ent"
 	"github.com/ta-toshio/bherb/ent/todo"
@@ -38,6 +40,16 @@ func (r *mutationResolver) CreateChart(ctx context.Context, input ent.CreateChar
 }
 
 func (r *queryResolver) Todos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) (*ent.TodoConnection, error) {
+	return r.Client.Debug().Todo.Query().
+		Paginate(ctx, after, first, before, last,
+			ent.WithTodoOrder(orderBy),
+			ent.WithTodoFilter(where.Filter),
+		)
+}
+
+func (r *queryResolver) TodosWithAuth(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) (*ent.TodoConnection, error) {
+	staff := middleware.ForStaffContext(ctx)
+	fmt.Println("staff", staff)
 	return r.Client.Debug().Todo.Query().
 		Paginate(ctx, after, first, before, last,
 			ent.WithTodoOrder(orderBy),
