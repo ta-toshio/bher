@@ -5,7 +5,7 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"github.com/ta-toshio/bherb/service/firebase"
 
 	"github.com/ta-toshio/bherb/ent"
 	"github.com/ta-toshio/bherb/ent/todo"
@@ -39,19 +39,24 @@ func (r *mutationResolver) CreateChart(ctx context.Context, input ent.CreateChar
 		Save(ctx)
 }
 
-func (r *mutationResolver) CreateStaff(ctx context.Context, input model.CreateStaffInput) (*ent.Staff, error) {
+func (r *mutationResolver) CreateStaffWithUID(ctx context.Context, input model.CreateStaffWithUIDInput) (*ent.Staff, error) {
 	i := ent.CreateStaffInput{
 		UID:   input.UID,
 		Email: input.Email,
 		Name:  input.Name,
+		Role:  input.Role,
 	}
 	staff, err := ent.FromContext(ctx).Staff.
 		Create().
 		SetInput(i).
 		Save(ctx)
 
-	if err != nil && input.Firebase {
-		fmt.Println("create firebase account")
+	if err == nil {
+		f, _ := firebase.NewFirebaseClient()
+		err := f.VerifyEmail(ctx, input.UID)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return staff, err
 }

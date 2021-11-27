@@ -5,10 +5,10 @@ import (
 )
 
 
-type CreateStaffInput struct {
+type CreateStaffWithUIDInput struct {
 	UID       string
 	Email     string
+	Password  string
 	Name      string
 	Role      *staff.Role
-	Firebase  bool
 }

@@ -78,11 +78,11 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateChart func(childComplexity int, input ent.CreateChartInput) int
-		CreateStaff func(childComplexity int, input model.CreateStaffInput) int
-		CreateTodo  func(childComplexity int, input ent.CreateTodoInput) int
-		UpdateTodo  func(childComplexity int, id int, input ent.UpdateTodoInput) int
-		UpdateTodos func(childComplexity int, ids []int, input ent.UpdateTodoInput) int
+		CreateChart        func(childComplexity int, input ent.CreateChartInput) int
+		CreateStaffWithUID func(childComplexity int, input model.CreateStaffWithUIDInput) int
+		CreateTodo         func(childComplexity int, input ent.CreateTodoInput) int
+		UpdateTodo         func(childComplexity int, id int, input ent.UpdateTodoInput) int
+		UpdateTodos        func(childComplexity int, ids []int, input ent.UpdateTodoInput) int
 	}
 
 	PageInfo struct {
@@ -134,7 +134,7 @@ type MutationResolver interface {
 	UpdateTodo(ctx context.Context, id int, input ent.UpdateTodoInput) (*ent.Todo, error)
 	UpdateTodos(ctx context.Context, ids []int, input ent.UpdateTodoInput) ([]*ent.Todo, error)
 	CreateChart(ctx context.Context, input ent.CreateChartInput) (*ent.Chart, error)
-	CreateStaff(ctx context.Context, input model.CreateStaffInput) (*ent.Staff, error)
+	CreateStaffWithUID(ctx context.Context, input model.CreateStaffWithUIDInput) (*ent.Staff, error)
 }
 type QueryResolver interface {
 	Todos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) (*ent.TodoConnection, error)
@@ -343,17 +343,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateChart(childComplexity, args["input"].(ent.CreateChartInput)), true
 
-	case "Mutation.createStaff":
-		if e.complexity.Mutation.CreateStaff == nil {
+	case "Mutation.createStaffWithUID":
+		if e.complexity.Mutation.CreateStaffWithUID == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createStaff_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createStaffWithUID_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateStaff(childComplexity, args["input"].(model.CreateStaffInput)), true
+		return e.complexity.Mutation.CreateStaffWithUID(childComplexity, args["input"].(model.CreateStaffWithUIDInput)), true
 
 	case "Mutation.createTodo":
 		if e.complexity.Mutation.CreateTodo == nil {
@@ -1169,12 +1169,12 @@ input CreateChartInput {
 }
 
 
-input CreateStaffInput {
+input CreateStaffWithUIDInput {
     uid: String!
     email: String!
+    password: String!
     name: String!
     role: Role!
-    firebase: Boolean!
 }`, BuiltIn: false},
 	{Name: "graph/mutation.graphqls", Input: `"""
 Define a mutation for creating todos.
@@ -1185,7 +1185,7 @@ type Mutation {
     updateTodo(id: ID!, input: UpdateTodoInput!): Todo!
     updateTodos(ids: [ID!]!, input: UpdateTodoInput!): [Todo!]!
     createChart(input: CreateChartInput!): Chart!
-    createStaff(input: CreateStaffInput!): Staff!
+    createStaffWithUID(input: CreateStaffWithUIDInput!): Staff!
 }
 
 `, BuiltIn: false},
@@ -1365,13 +1365,13 @@ func (ec *executionContext) field_Mutation_createChart_args(ctx context.Context,
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createStaff_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createStaffWithUID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.CreateStaffInput
+	var arg0 model.CreateStaffWithUIDInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCreateStaffInput2githubᚗcomᚋtaᚑtoshioᚋbherbᚋgraphᚋmodelᚐCreateStaffInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateStaffWithUIDInput2githubᚗcomᚋtaᚑtoshioᚋbherbᚋgraphᚋmodelᚐCreateStaffWithUIDInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2653,7 +2653,7 @@ func (ec *executionContext) _Mutation_createChart(ctx context.Context, field gra
 	return ec.marshalNChart2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐChart(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_createStaff(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createStaffWithUID(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2670,7 +2670,7 @@ func (ec *executionContext) _Mutation_createStaff(ctx context.Context, field gra
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_createStaff_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createStaffWithUID_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2678,7 +2678,7 @@ func (ec *executionContext) _Mutation_createStaff(ctx context.Context, field gra
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateStaff(rctx, args["input"].(model.CreateStaffInput))
+		return ec.resolvers.Mutation().CreateStaffWithUID(rctx, args["input"].(model.CreateStaffWithUIDInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6948,8 +6948,8 @@ func (ec *executionContext) unmarshalInputCreateChartInput(ctx context.Context, 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCreateStaffInput(ctx context.Context, obj interface{}) (model.CreateStaffInput, error) {
-	var it model.CreateStaffInput
+func (ec *executionContext) unmarshalInputCreateStaffWithUIDInput(ctx context.Context, obj interface{}) (model.CreateStaffWithUIDInput, error) {
+	var it model.CreateStaffWithUIDInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -6973,6 +6973,14 @@ func (ec *executionContext) unmarshalInputCreateStaffInput(ctx context.Context, 
 			if err != nil {
 				return it, err
 			}
+		case "password":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+			it.Password, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "name":
 			var err error
 
@@ -6986,14 +6994,6 @@ func (ec *executionContext) unmarshalInputCreateStaffInput(ctx context.Context, 
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
 			it.Role, err = ec.unmarshalNRole2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚋstaffᚐRole(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "firebase":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firebase"))
-			it.Firebase, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8341,8 +8341,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "createStaff":
-			out.Values[i] = ec._Mutation_createStaff(ctx, field)
+		case "createStaffWithUID":
+			out.Values[i] = ec._Mutation_createStaffWithUID(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -8951,8 +8951,8 @@ func (ec *executionContext) unmarshalNCreateChartInput2githubᚗcomᚋtaᚑtoshi
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCreateStaffInput2githubᚗcomᚋtaᚑtoshioᚋbherbᚋgraphᚋmodelᚐCreateStaffInput(ctx context.Context, v interface{}) (model.CreateStaffInput, error) {
-	res, err := ec.unmarshalInputCreateStaffInput(ctx, v)
+func (ec *executionContext) unmarshalNCreateStaffWithUIDInput2githubᚗcomᚋtaᚑtoshioᚋbherbᚋgraphᚋmodelᚐCreateStaffWithUIDInput(ctx context.Context, v interface{}) (model.CreateStaffWithUIDInput, error) {
+	res, err := ec.unmarshalInputCreateStaffWithUIDInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

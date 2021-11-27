@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/ta-toshio/bherb/ent"
 	"github.com/ta-toshio/bherb/ent/staff"
-	"github.com/ta-toshio/bherb/service"
+	"github.com/ta-toshio/bherb/service/firebase"
 	"net/http"
 	"strings"
 )
@@ -20,7 +20,7 @@ func AuthMiddleware(ormClient *ent.Client) func(handler http.Handler) http.Handl
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			authHeader := r.Header.Get("Authorization")
-			idToken := strings.Replace(authHeader, "Bearer ", "", 1)
+			idToken := strings.TrimPrefix(authHeader, "Bearer ")
 
 			// Allow unauthenticated users in
 			if idToken == "" {
@@ -28,7 +28,7 @@ func AuthMiddleware(ormClient *ent.Client) func(handler http.Handler) http.Handl
 				return
 			}
 
-			client, err := service.NewFirebaseClient()
+			client, err := firebase.NewFirebaseClient()
 			if err != nil {
 				http.Error(w, "Failed to initiate firebase", http.StatusInternalServerError)
 				return

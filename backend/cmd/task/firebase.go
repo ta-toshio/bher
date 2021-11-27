@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/ta-toshio/bherb/service"
+	"github.com/ta-toshio/bherb/service/firebase"
 )
 
 func main() {
-	client, err := service.NewFirebaseClient()
+	client, err := firebase.NewFirebaseClient()
 	if err != nil {
 		fmt.Println(err)
 		return

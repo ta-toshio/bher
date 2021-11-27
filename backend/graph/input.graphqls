@@ -63,10 +63,10 @@ input CreateChartInput {
 }
 
 
-input CreateStaffInput {
+input CreateStaffWithUIDInput {
     uid: String!
     email: String!
+    password: String!
     name: String!
     role: Role!
-    firebase: Boolean!
 }
