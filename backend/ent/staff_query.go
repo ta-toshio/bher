@@ -253,12 +253,12 @@ func (sq *StaffQuery) Clone() *StaffQuery {
 // Example:
 //
 //	var v []struct {
-//		Email string `json:"email,omitempty"`
+//		UID string `json:"uid,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Staff.Query().
-//		GroupBy(staff.FieldEmail).
+//		GroupBy(staff.FieldUID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -280,11 +280,11 @@ func (sq *StaffQuery) GroupBy(field string, fields ...string) *StaffGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Email string `json:"email,omitempty"`
+//		UID string `json:"uid,omitempty"`
 //	}
 //
 //	client.Staff.Query().
-//		Select(staff.FieldEmail).
+//		Select(staff.FieldUID).
 //		Scan(ctx, &v)
 //
 func (sq *StaffQuery) Select(fields ...string) *StaffSelect {

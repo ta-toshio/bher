@@ -1125,6 +1125,21 @@ type StaffWhereInput struct {
 	IDLT    *int  `json:"idLT,omitempty"`
 	IDLTE   *int  `json:"idLTE,omitempty"`
 
+	// "uid" field predicates.
+	UID             *string  `json:"uid,omitempty"`
+	UIDNEQ          *string  `json:"uidNEQ,omitempty"`
+	UIDIn           []string `json:"uidIn,omitempty"`
+	UIDNotIn        []string `json:"uidNotIn,omitempty"`
+	UIDGT           *string  `json:"uidGT,omitempty"`
+	UIDGTE          *string  `json:"uidGTE,omitempty"`
+	UIDLT           *string  `json:"uidLT,omitempty"`
+	UIDLTE          *string  `json:"uidLTE,omitempty"`
+	UIDContains     *string  `json:"uidContains,omitempty"`
+	UIDHasPrefix    *string  `json:"uidHasPrefix,omitempty"`
+	UIDHasSuffix    *string  `json:"uidHasSuffix,omitempty"`
+	UIDEqualFold    *string  `json:"uidEqualFold,omitempty"`
+	UIDContainsFold *string  `json:"uidContainsFold,omitempty"`
+
 	// "email" field predicates.
 	Email             *string  `json:"email,omitempty"`
 	EmailNEQ          *string  `json:"emailNEQ,omitempty"`
@@ -1264,6 +1279,45 @@ func (i *StaffWhereInput) P() (predicate.Staff, error) {
 	}
 	if i.IDLTE != nil {
 		predicates = append(predicates, staff.IDLTE(*i.IDLTE))
+	}
+	if i.UID != nil {
+		predicates = append(predicates, staff.UIDEQ(*i.UID))
+	}
+	if i.UIDNEQ != nil {
+		predicates = append(predicates, staff.UIDNEQ(*i.UIDNEQ))
+	}
+	if len(i.UIDIn) > 0 {
+		predicates = append(predicates, staff.UIDIn(i.UIDIn...))
+	}
+	if len(i.UIDNotIn) > 0 {
+		predicates = append(predicates, staff.UIDNotIn(i.UIDNotIn...))
+	}
+	if i.UIDGT != nil {
+		predicates = append(predicates, staff.UIDGT(*i.UIDGT))
+	}
+	if i.UIDGTE != nil {
+		predicates = append(predicates, staff.UIDGTE(*i.UIDGTE))
+	}
+	if i.UIDLT != nil {
+		predicates = append(predicates, staff.UIDLT(*i.UIDLT))
+	}
+	if i.UIDLTE != nil {
+		predicates = append(predicates, staff.UIDLTE(*i.UIDLTE))
+	}
+	if i.UIDContains != nil {
+		predicates = append(predicates, staff.UIDContains(*i.UIDContains))
+	}
+	if i.UIDHasPrefix != nil {
+		predicates = append(predicates, staff.UIDHasPrefix(*i.UIDHasPrefix))
+	}
+	if i.UIDHasSuffix != nil {
+		predicates = append(predicates, staff.UIDHasSuffix(*i.UIDHasSuffix))
+	}
+	if i.UIDEqualFold != nil {
+		predicates = append(predicates, staff.UIDEqualFold(*i.UIDEqualFold))
+	}
+	if i.UIDContainsFold != nil {
+		predicates = append(predicates, staff.UIDContainsFold(*i.UIDContainsFold))
 	}
 	if i.Email != nil {
 		predicates = append(predicates, staff.EmailEQ(*i.Email))

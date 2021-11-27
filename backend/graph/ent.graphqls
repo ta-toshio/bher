@@ -380,6 +380,21 @@ input StaffWhereInput {
   and: [StaffWhereInput!]
   or: [StaffWhereInput!]
   
+  """uid field predicates"""
+  uid: String
+  uidNEQ: String
+  uidIn: [String!]
+  uidNotIn: [String!]
+  uidGT: String
+  uidGTE: String
+  uidLT: String
+  uidLTE: String
+  uidContains: String
+  uidHasPrefix: String
+  uidHasSuffix: String
+  uidEqualFold: String
+  uidContainsFold: String
+  
   """email field predicates"""
   email: String
   emailNEQ: String

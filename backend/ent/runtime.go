@@ -100,20 +100,24 @@ func init() {
 	chart.DefaultPrefectureID = chartDescPrefectureID.Default.(int)
 	staffFields := schema.Staff{}.Fields()
 	_ = staffFields
+	// staffDescUID is the schema descriptor for uid field.
+	staffDescUID := staffFields[0].Descriptor()
+	// staff.UIDValidator is a validator for the "uid" field. It is called by the builders before save.
+	staff.UIDValidator = staffDescUID.Validators[0].(func(string) error)
 	// staffDescEmail is the schema descriptor for email field.
-	staffDescEmail := staffFields[0].Descriptor()
+	staffDescEmail := staffFields[1].Descriptor()
 	// staff.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	staff.EmailValidator = staffDescEmail.Validators[0].(func(string) error)
 	// staffDescName is the schema descriptor for name field.
-	staffDescName := staffFields[1].Descriptor()
+	staffDescName := staffFields[2].Descriptor()
 	// staff.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	staff.NameValidator = staffDescName.Validators[0].(func(string) error)
 	// staffDescCreatedAt is the schema descriptor for created_at field.
-	staffDescCreatedAt := staffFields[3].Descriptor()
+	staffDescCreatedAt := staffFields[4].Descriptor()
 	// staff.DefaultCreatedAt holds the default value on creation for the created_at field.
 	staff.DefaultCreatedAt = staffDescCreatedAt.Default.(func() time.Time)
 	// staffDescUpdatedAt is the schema descriptor for updated_at field.
-	staffDescUpdatedAt := staffFields[4].Descriptor()
+	staffDescUpdatedAt := staffFields[5].Descriptor()
 	// staff.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	staff.DefaultUpdatedAt = staffDescUpdatedAt.Default.(func() time.Time)
 	todoFields := schema.Todo{}.Fields()

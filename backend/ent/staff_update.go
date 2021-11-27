@@ -27,6 +27,12 @@ func (su *StaffUpdate) Where(ps ...predicate.Staff) *StaffUpdate {
 	return su
 }
 
+// SetUID sets the "uid" field.
+func (su *StaffUpdate) SetUID(s string) *StaffUpdate {
+	su.mutation.SetUID(s)
+	return su
+}
+
 // SetEmail sets the "email" field.
 func (su *StaffUpdate) SetEmail(s string) *StaffUpdate {
 	su.mutation.SetEmail(s)
@@ -134,6 +140,11 @@ func (su *StaffUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (su *StaffUpdate) check() error {
+	if v, ok := su.mutation.UID(); ok {
+		if err := staff.UIDValidator(v); err != nil {
+			return &ValidationError{Name: "uid", err: fmt.Errorf("ent: validator failed for field \"uid\": %w", err)}
+		}
+	}
 	if v, ok := su.mutation.Email(); ok {
 		if err := staff.EmailValidator(v); err != nil {
 			return &ValidationError{Name: "email", err: fmt.Errorf("ent: validator failed for field \"email\": %w", err)}
@@ -169,6 +180,13 @@ func (su *StaffUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := su.mutation.UID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: staff.FieldUID,
+		})
 	}
 	if value, ok := su.mutation.Email(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -215,6 +233,12 @@ type StaffUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *StaffMutation
+}
+
+// SetUID sets the "uid" field.
+func (suo *StaffUpdateOne) SetUID(s string) *StaffUpdateOne {
+	suo.mutation.SetUID(s)
+	return suo
 }
 
 // SetEmail sets the "email" field.
@@ -331,6 +355,11 @@ func (suo *StaffUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (suo *StaffUpdateOne) check() error {
+	if v, ok := suo.mutation.UID(); ok {
+		if err := staff.UIDValidator(v); err != nil {
+			return &ValidationError{Name: "uid", err: fmt.Errorf("ent: validator failed for field \"uid\": %w", err)}
+		}
+	}
 	if v, ok := suo.mutation.Email(); ok {
 		if err := staff.EmailValidator(v); err != nil {
 			return &ValidationError{Name: "email", err: fmt.Errorf("ent: validator failed for field \"email\": %w", err)}
@@ -383,6 +412,13 @@ func (suo *StaffUpdateOne) sqlSave(ctx context.Context) (_node *Staff, err error
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := suo.mutation.UID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: staff.FieldUID,
+		})
 	}
 	if value, ok := suo.mutation.Email(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

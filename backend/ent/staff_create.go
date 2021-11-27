@@ -20,6 +20,12 @@ type StaffCreate struct {
 	hooks    []Hook
 }
 
+// SetUID sets the "uid" field.
+func (sc *StaffCreate) SetUID(s string) *StaffCreate {
+	sc.mutation.SetUID(s)
+	return sc
+}
+
 // SetEmail sets the "email" field.
 func (sc *StaffCreate) SetEmail(s string) *StaffCreate {
 	sc.mutation.SetEmail(s)
@@ -161,6 +167,14 @@ func (sc *StaffCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (sc *StaffCreate) check() error {
+	if _, ok := sc.mutation.UID(); !ok {
+		return &ValidationError{Name: "uid", err: errors.New(`ent: missing required field "uid"`)}
+	}
+	if v, ok := sc.mutation.UID(); ok {
+		if err := staff.UIDValidator(v); err != nil {
+			return &ValidationError{Name: "uid", err: fmt.Errorf(`ent: validator failed for field "uid": %w`, err)}
+		}
+	}
 	if _, ok := sc.mutation.Email(); !ok {
 		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "email"`)}
 	}
@@ -218,6 +232,14 @@ func (sc *StaffCreate) createSpec() (*Staff, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	if value, ok := sc.mutation.UID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: staff.FieldUID,
+		})
+		_node.UID = value
+	}
 	if value, ok := sc.mutation.Email(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,

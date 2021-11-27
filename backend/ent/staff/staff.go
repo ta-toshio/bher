@@ -14,6 +14,8 @@ const (
 	Label = "staff"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldUID holds the string denoting the uid field in the database.
+	FieldUID = "uid"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
 	// FieldName holds the string denoting the name field in the database.
@@ -31,6 +33,7 @@ const (
 // Columns holds all SQL columns for staff fields.
 var Columns = []string{
 	FieldID,
+	FieldUID,
 	FieldEmail,
 	FieldName,
 	FieldRole,
@@ -49,6 +52,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// UIDValidator is a validator for the "uid" field. It is called by the builders before save.
+	UIDValidator func(string) error
 	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	EmailValidator func(string) error
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.

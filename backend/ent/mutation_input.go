@@ -221,6 +221,7 @@ func (u *ChartUpdateOne) SetInput(i UpdateChartInput) *ChartUpdateOne {
 
 // CreateStaffInput represents a mutation input for creating staffs.
 type CreateStaffInput struct {
+	UID       string
 	Email     string
 	Name      string
 	Role      *staff.Role
@@ -230,6 +231,7 @@ type CreateStaffInput struct {
 
 // Mutate applies the CreateStaffInput on the StaffCreate builder.
 func (i *CreateStaffInput) Mutate(m *StaffCreate) {
+	m.SetUID(i.UID)
 	m.SetEmail(i.Email)
 	m.SetName(i.Name)
 	if v := i.Role; v != nil {
@@ -251,6 +253,7 @@ func (c *StaffCreate) SetInput(i CreateStaffInput) *StaffCreate {
 
 // UpdateStaffInput represents a mutation input for updating staffs.
 type UpdateStaffInput struct {
+	UID       *string
 	Email     *string
 	Name      *string
 	Role      *staff.Role
@@ -259,6 +262,9 @@ type UpdateStaffInput struct {
 
 // Mutate applies the UpdateStaffInput on the StaffMutation.
 func (i *UpdateStaffInput) Mutate(m *StaffMutation) {
+	if v := i.UID; v != nil {
+		m.SetUID(*v)
+	}
 	if v := i.Email; v != nil {
 		m.SetEmail(*v)
 	}

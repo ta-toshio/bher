@@ -2089,6 +2089,7 @@ type StaffMutation struct {
 	op            Op
 	typ           string
 	id            *int
+	uid           *string
 	email         *string
 	name          *string
 	role          *staff.Role
@@ -2177,6 +2178,42 @@ func (m *StaffMutation) ID() (id int, exists bool) {
 		return
 	}
 	return *m.id, true
+}
+
+// SetUID sets the "uid" field.
+func (m *StaffMutation) SetUID(s string) {
+	m.uid = &s
+}
+
+// UID returns the value of the "uid" field in the mutation.
+func (m *StaffMutation) UID() (r string, exists bool) {
+	v := m.uid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUID returns the old "uid" field's value of the Staff entity.
+// If the Staff object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffMutation) OldUID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUID: %w", err)
+	}
+	return oldValue.UID, nil
+}
+
+// ResetUID resets all changes to the "uid" field.
+func (m *StaffMutation) ResetUID() {
+	m.uid = nil
 }
 
 // SetEmail sets the "email" field.
@@ -2378,7 +2415,10 @@ func (m *StaffMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StaffMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
+	if m.uid != nil {
+		fields = append(fields, staff.FieldUID)
+	}
 	if m.email != nil {
 		fields = append(fields, staff.FieldEmail)
 	}
@@ -2402,6 +2442,8 @@ func (m *StaffMutation) Fields() []string {
 // schema.
 func (m *StaffMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case staff.FieldUID:
+		return m.UID()
 	case staff.FieldEmail:
 		return m.Email()
 	case staff.FieldName:
@@ -2421,6 +2463,8 @@ func (m *StaffMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *StaffMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case staff.FieldUID:
+		return m.OldUID(ctx)
 	case staff.FieldEmail:
 		return m.OldEmail(ctx)
 	case staff.FieldName:
@@ -2440,6 +2484,13 @@ func (m *StaffMutation) OldField(ctx context.Context, name string) (ent.Value, e
 // type.
 func (m *StaffMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case staff.FieldUID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUID(v)
+		return nil
 	case staff.FieldEmail:
 		v, ok := value.(string)
 		if !ok {
@@ -2524,6 +2575,9 @@ func (m *StaffMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *StaffMutation) ResetField(name string) error {
 	switch name {
+	case staff.FieldUID:
+		m.ResetUID()
+		return nil
 	case staff.FieldEmail:
 		m.ResetEmail()
 		return nil

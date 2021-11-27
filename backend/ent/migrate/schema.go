@@ -46,6 +46,7 @@ var (
 	// StaffsColumns holds the columns for the "staffs" table.
 	StaffsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uid", Type: field.TypeString, Unique: true},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "role", Type: field.TypeEnum, Enums: []string{"STAFF", "ADMIN"}, Default: "STAFF"},
