@@ -31,7 +31,11 @@ func (r *queryResolver) TodosWithAuth(ctx context.Context, after *ent.Cursor, fi
 }
 
 func (r *queryResolver) Staffs(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffOrder, where *ent.StaffWhereInput) (*ent.StaffConnection, error) {
-	panic(fmt.Errorf("not implemented"))
+	return r.Client.Debug().Staff.Query().
+		Paginate(ctx, after, first, before, last,
+			ent.WithStaffOrder(orderBy),
+			ent.WithStaffFilter(where.Filter),
+		)
 }
 
 // Query returns generated.QueryResolver implementation.
