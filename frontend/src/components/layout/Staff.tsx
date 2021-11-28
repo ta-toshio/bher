@@ -1,7 +1,17 @@
 import React from 'react'
 import Head from 'next/head'
+import Link from 'next/link'
+import { useRequireLogin } from '../../contexts/auth/useRequireLogin'
+import { staff } from '../../contexts/auth/user'
+import { useRouter } from 'next/router'
 
 const StaffLayout: React.FC = ({ children }) => {
+  const { checking } = useRequireLogin(staff)
+  const { pathname } = useRouter()
+  if (checking) return <></>
+
+  console.log(pathname)
+
   return (
     <>
       <Head>
@@ -13,9 +23,11 @@ const StaffLayout: React.FC = ({ children }) => {
           <nav className='navbar is-white'>
             <div className='container'>
               <div className='navbar-brand'>
-                <a className='navbar-item brand-text' href='../index.html'>
-                  BHERB
-                </a>
+                <Link href="/admin">
+                  <a className="navbar-item brand-text">
+                    BHERB
+                  </a>
+                </Link>
                 <div className='navbar-burger burger' data-target='navMenu'>
                   <span />
                   <span />
@@ -24,9 +36,11 @@ const StaffLayout: React.FC = ({ children }) => {
               </div>
               <div id='navMenu' className='navbar-menu'>
                 <div className='navbar-start'>
-                  <a className='navbar-item' href='admin.html'>
-                    Home
-                  </a>
+                  <Link href="/admin">
+                    <a className='navbar-item'>
+                      Home
+                    </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -40,14 +54,22 @@ const StaffLayout: React.FC = ({ children }) => {
                     General
                   </p>
                   <ul className='menu-list'>
-                    <li><a className='is-active'>Dashboard</a></li>
+                    <li>
+                      <Link href="/admin">
+                        <a className={pathname === '/admin' ? 'is-active' : ''}>Dashboard</a>
+                      </Link>
+                    </li>
                   </ul>
                   <p className='menu-label'>
                     Administration
                   </p>
                   <ul className='menu-list'>
                     <li><a>Store</a></li>
-                    <li><a>Staff</a></li>
+                    <li>
+                      <Link href={"/admin/staffs"}>
+                        <a className={pathname.includes('/admin/staffs') ? 'is-active' : ''}>Staff</a>
+                      </Link>
+                    </li>
                   </ul>
                 </aside>
               </div>
@@ -60,9 +82,7 @@ const StaffLayout: React.FC = ({ children }) => {
                   </ul>
                 </nav>
                 */}
-                <div className='columns'>
-                  {children}
-                </div>
+                {children}
               </div>
             </div>
           </div>

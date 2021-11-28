@@ -10,8 +10,10 @@ const TopPage: NextPage = () => {
 
   return (
     <StaffLayout>
-      <div className="column">
-        test
+      <div className='columns'>
+        <div className='column'>
+          test
+        </div>
       </div>
     </StaffLayout>
   )

@@ -5,32 +5,42 @@ import * as yup from 'yup'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { firebaseAuth } from '../../../app/firebase'
 import { useMutation } from '@apollo/client'
-import { CREATE_STAFF_WITH_UID } from '../../../api/queries/staff'
+import { CREATE_STAFF_WITH_UID } from '../../../api/queries'
 import {
   CreateStaffWithUidMutation,
   CreateStaffWithUidMutationVariables,
   Role
 } from '../../../api/generated/graphql'
+import { useRouter } from 'next/router'
 
 export interface IFormInput {
   name: string
   email: string
   password: string
+  role: string
 }
 
 const schema = yup.object({
   name: yup.string().required(),
   email: yup.string().email().required(),
   password: yup.string().required(),
+  role: yup.string().required(),
 })
 
-const initialValues = {
+
+type Props = {
+  initialValues?: IFormInput
+}
+
+const defaultValues = {
   name: '',
   email: '',
   password: '',
+  role: Role.Staff,
 }
 
-const useRegisterForm = () => {
+const useStaffMutation = ({ initialValues = defaultValues }: Props) => {
+  const router = useRouter()
   const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>({
     resolver: yupResolver(schema),
     defaultValues: initialValues,
@@ -54,7 +64,7 @@ const useRegisterForm = () => {
               name: data.name,
               password: data.password,
               uid: user.uid,
-              role: Role.Admin,
+              role: data.role as Role,
             }
           },
           context: {
@@ -63,6 +73,8 @@ const useRegisterForm = () => {
             }
           }
         })
+
+        router.replace('/admin/staffs')
       })
       .catch((error) => console.log(error))
 
@@ -76,4 +88,4 @@ const useRegisterForm = () => {
   }
 }
 
-export default useRegisterForm
+export default useStaffMutation
