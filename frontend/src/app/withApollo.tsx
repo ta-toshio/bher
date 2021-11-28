@@ -4,6 +4,7 @@ import { setContext } from '@apollo/client/link/context'
 import merge from 'deepmerge'
 import isEqual from 'lodash/isEqual'
 import { isServer } from '../utils/envHelper'
+import { getIdToken } from '../contexts/windowContext'
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__'
 
@@ -11,10 +12,15 @@ let apolloClient
 
 function createApolloClient(options) {
   const csrfLink = setContext(async (_, { headers }) => {
+    let token
+    if (!isServer()) {
+      token = await getIdToken()
+    }
     return {
       headers: {
         ...headers,
         'X-Requested-With': 'XMLHttpRequest',
+        ...(token ? {"Authorization": `Bearer ${token}`} : {}),
         ...(options && options.headers ? options.headers : {}),
       },
     }

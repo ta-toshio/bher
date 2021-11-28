@@ -70,7 +70,7 @@ const useRegisterForm = () => {
         console.log(error)
       })
 
-  }, [])
+  }, [createStaffWithUID])
 
   return {
     register,

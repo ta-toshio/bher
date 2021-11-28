@@ -3,6 +3,7 @@ import type { AppProps } from 'next/app'
 import { ApolloProvider } from '@apollo/client'
 import { useApollo } from '../app/withApollo'
 import { wrapper } from '../app/store'
+import { AuthProvider } from '../contexts/auth/authContext'
 import '../styles/globals.scss'
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -10,8 +11,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <ApolloProvider client={apolloClient}>
-      <Component {...pageProps} />
+      <AuthProvider>
+        <Component {...pageProps} />
+      </AuthProvider>
     </ApolloProvider>
   )
 }
+
 export default wrapper.withRedux(MyApp)
