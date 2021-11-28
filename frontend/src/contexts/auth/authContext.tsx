@@ -30,6 +30,7 @@ const AuthProvider = ({ children }): JSX.Element => {
       setCurrentUser({uid: user.uid})
     })
   }, [])
+  console.log(currentUser)
 
   return (
     <AuthContext.Provider value={{ currentUser }}>

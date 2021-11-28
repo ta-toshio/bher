@@ -9,8 +9,12 @@ export const useRequireNotLogin = (type: "staff" | "user") => {
   useEffect(() => {
     if (isAuthChecking) return
     if (currentUser) {
-      if (type === "staff") router.push('/staff')
+      if (type === "staff") router.push('/staffs')
       if (type === "user") router.push('/')
     }
   }, [isAuthChecking, currentUser])
+
+  return {
+    checking: isAuthChecking
+  }
 }
