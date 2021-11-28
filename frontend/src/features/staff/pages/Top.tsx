@@ -5,12 +5,14 @@ import { useRequireLogin } from '../../../contexts/auth/useRequireLogin'
 import { staff } from '../../../contexts/auth/user'
 
 const TopPage: NextPage = () => {
-  const {checking} =useRequireLogin(staff)
+  const { checking } = useRequireLogin(staff)
   if (checking) return <></>
 
   return (
     <StaffLayout>
-      top
+      <div className="column">
+        test
+      </div>
     </StaffLayout>
   )
 }
