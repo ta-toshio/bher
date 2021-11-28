@@ -25,5 +25,5 @@ type Query {
         last: Int,
         orderBy: StaffOrder,
         where: StaffWhereInput,
-    ): StaffConnection
+    ): StaffConnection @auth(type: STAFF)
 }

@@ -1281,7 +1281,7 @@ type Query {
         last: Int,
         orderBy: StaffOrder,
         where: StaffWhereInput,
-    ): StaffConnection
+    ): StaffConnection @auth(type: STAFF)
 }
 `, BuiltIn: false},
 	{Name: "graph/scalar.graphqls", Input: `"""Define an required authentification"""
@@ -3108,8 +3108,32 @@ func (ec *executionContext) _Query_staffs(ctx context.Context, field graphql.Col
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Staffs(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.StaffOrder), args["where"].(*ent.StaffWhereInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Staffs(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.StaffOrder), args["where"].(*ent.StaffWhereInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			typeArg, err := ec.unmarshalNAuth2githubᚗcomᚋtaᚑtoshioᚋbherbᚋgraphᚋmodelᚐAuth(ctx, "STAFF")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0, typeArg)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.StaffConnection); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/ta-toshio/bherb/ent.StaffConnection`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
