@@ -1,6 +1,6 @@
 import { useLazyQuery } from '@apollo/client'
-import { TodosQuery, TodosQueryVariables } from '../../../generated/graphql'
-import { TODOS } from '../../../queries/todo'
+import { TodosQuery, TodosQueryVariables } from '../../../pages/api/generated/graphql'
+import { TODOS } from '../../../api/queries/todo'
 import { useCallback, useEffect, useState } from 'react'
 
 const LIMIT = 2

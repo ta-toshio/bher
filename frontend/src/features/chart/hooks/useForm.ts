@@ -3,8 +3,8 @@ import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 // import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useMutation } from '@apollo/client'
-import { CREATE_CHART } from '../../../queries/chart'
-import { CreateChartMutation, CreateChartMutationVariables } from '../../../generated/graphql'
+import { CREATE_CHART } from '../../../api/queries/chart'
+import { CreateChartMutation, CreateChartMutationVariables } from '../../../pages/api/generated/graphql'
 import { useCallback } from 'react'
 
 export interface IFormInput {

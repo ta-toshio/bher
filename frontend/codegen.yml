@@ -1,8 +1,8 @@
 overwrite: true
 schema: "http://localhost:8400/query"
-documents: "src/queries/**/*.ts"
+documents: "src/api/queries/**/*.ts"
 generates:
-  src/generated/graphql.tsx:
+  src/api/generated/graphql.tsx:
     plugins:
       - "typescript"
       - "typescript-operations"

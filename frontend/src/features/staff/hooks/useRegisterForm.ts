@@ -5,8 +5,8 @@ import * as yup from 'yup'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { firebaseAuth } from '../../../app/firebase'
 import { useMutation } from '@apollo/client'
-import { CreateStaffWithUidMutation, CreateStaffWithUidMutationVariables, Role } from '../../../generated/graphql'
-import { CREATE_STAFF_WITH_UID } from '../../../queries/staff'
+import { CreateStaffWithUidMutation, CreateStaffWithUidMutationVariables, Role } from '../../../pages/api/generated/graphql'
+import { CREATE_STAFF_WITH_UID } from '../../../api/queries/staff'
 
 export interface IFormInput {
   name: string

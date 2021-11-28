@@ -3,8 +3,8 @@ import { useCallback } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
-import { CREATE_TODO } from '../../../queries/todo'
-import { CreateTodoMutation, CreateTodoMutationVariables, Status } from '../../../generated/graphql'
+import { CREATE_TODO } from '../../../api/queries/todo'
+import { CreateTodoMutation, CreateTodoMutationVariables, Status } from '../../../pages/api/generated/graphql'
 
 interface IFormInput {
   text: string

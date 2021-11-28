@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client'
-import { chartFragment } from './chart'
 
 export const staffFragment = gql`
   fragment staffFragment on Staff {
