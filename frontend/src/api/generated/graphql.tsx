@@ -465,8 +465,20 @@ export type PageInfo = {
 /** Define a query for getting all todos and support the Node interface. */
 export type Query = {
   __typename?: 'Query';
+  staffs?: Maybe<StaffConnection>;
   todos?: Maybe<TodoConnection>;
   todosWithAuth?: Maybe<TodoConnection>;
+};
+
+
+/** Define a query for getting all todos and support the Node interface. */
+export type QueryStaffsArgs = {
+  after?: Maybe<Scalars['Cursor']>;
+  before?: Maybe<Scalars['Cursor']>;
+  first?: Maybe<Scalars['Int']>;
+  last?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StaffOrder>;
+  where?: Maybe<StaffWhereInput>;
 };
 
 
@@ -507,6 +519,29 @@ export type Staff = {
   uid: Scalars['String'];
   updatedAt: Scalars['Time'];
 };
+
+export type StaffConnection = {
+  __typename?: 'StaffConnection';
+  edges?: Maybe<Array<Maybe<StaffEdge>>>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int'];
+};
+
+export type StaffEdge = {
+  __typename?: 'StaffEdge';
+  cursor: Scalars['Cursor'];
+  node?: Maybe<Staff>;
+};
+
+export type StaffOrder = {
+  direction: OrderDirection;
+  field?: Maybe<StaffOrderField>;
+};
+
+export enum StaffOrderField {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
 
 /**
  * StaffWhereInput is used for filtering Staff objects.
@@ -737,6 +772,18 @@ export type CreateStaffWithUidMutationVariables = Exact<{
 
 export type CreateStaffWithUidMutation = { __typename?: 'Mutation', createStaffWithUID: { __typename?: 'Staff', id: string, uid: string, name: string, email: string, role: Role } };
 
+export type StaffsQueryVariables = Exact<{
+  after?: Maybe<Scalars['Cursor']>;
+  first?: Maybe<Scalars['Int']>;
+  before?: Maybe<Scalars['Cursor']>;
+  last?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StaffOrder>;
+  where?: Maybe<StaffWhereInput>;
+}>;
+
+
+export type StaffsQuery = { __typename?: 'Query', staffs?: { __typename?: 'StaffConnection', totalCount: number, edges?: Array<{ __typename?: 'StaffEdge', cursor: any, node?: { __typename?: 'Staff', id: string, uid: string, name: string, email: string, role: Role } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null | undefined, endCursor?: any | null | undefined, hasNextPage: boolean, hasPreviousPage: boolean } } | null | undefined };
+
 export type TodoFragmentFragment = { __typename?: 'Todo', id: string, createdAt?: any | null | undefined, status: Status, priority: number, text: string };
 
 export type TodosQueryVariables = Exact<{
@@ -879,6 +926,63 @@ export function useCreateStaffWithUidMutation(baseOptions?: Apollo.MutationHookO
 export type CreateStaffWithUidMutationHookResult = ReturnType<typeof useCreateStaffWithUidMutation>;
 export type CreateStaffWithUidMutationResult = Apollo.MutationResult<CreateStaffWithUidMutation>;
 export type CreateStaffWithUidMutationOptions = Apollo.BaseMutationOptions<CreateStaffWithUidMutation, CreateStaffWithUidMutationVariables>;
+export const StaffsDocument = gql`
+    query Staffs($after: Cursor, $first: Int, $before: Cursor, $last: Int, $orderBy: StaffOrder, $where: StaffWhereInput) {
+  staffs(
+    after: $after
+    first: $first
+    before: $before
+    last: $last
+    orderBy: $orderBy
+    where: $where
+  ) {
+    totalCount
+    edges {
+      node {
+        ...staffFragment
+      }
+      cursor
+    }
+    pageInfo {
+      ...pageInfoFragment
+    }
+  }
+}
+    ${StaffFragmentFragmentDoc}
+${PageInfoFragmentFragmentDoc}`;
+
+/**
+ * __useStaffsQuery__
+ *
+ * To run a query within a React component, call `useStaffsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStaffsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStaffsQuery({
+ *   variables: {
+ *      after: // value for 'after'
+ *      first: // value for 'first'
+ *      before: // value for 'before'
+ *      last: // value for 'last'
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *   },
+ * });
+ */
+export function useStaffsQuery(baseOptions?: Apollo.QueryHookOptions<StaffsQuery, StaffsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<StaffsQuery, StaffsQueryVariables>(StaffsDocument, options);
+      }
+export function useStaffsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<StaffsQuery, StaffsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<StaffsQuery, StaffsQueryVariables>(StaffsDocument, options);
+        }
+export type StaffsQueryHookResult = ReturnType<typeof useStaffsQuery>;
+export type StaffsLazyQueryHookResult = ReturnType<typeof useStaffsLazyQuery>;
+export type StaffsQueryResult = Apollo.QueryResult<StaffsQuery, StaffsQueryVariables>;
 export const TodosDocument = gql`
     query Todos($after: Cursor, $first: Int, $before: Cursor, $last: Int, $orderBy: TodoOrder, $where: TodoWhereInput) {
   todos(

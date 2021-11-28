@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+import { pageInfoFragment } from './app'
 
 export const staffFragment = gql`
   fragment staffFragment on Staff {
@@ -17,4 +18,37 @@ export const CREATE_STAFF_WITH_UID = gql`
     }
   }
   ${staffFragment}
+`
+
+export const STAFFS = gql`
+  query Staffs(
+    $after: Cursor,
+    $first: Int,
+    $before: Cursor,
+    $last: Int,
+    $orderBy: StaffOrder,
+    $where: StaffWhereInput
+  ) {
+    staffs(
+      after: $after,
+      first: $first,
+      before: $before,
+      last: $last,
+      orderBy: $orderBy,
+      where: $where
+    ) {
+      totalCount
+      edges {
+        node {
+          ...staffFragment
+        }
+        cursor
+      }
+      pageInfo {
+        ...pageInfoFragment
+      }
+    }
+  }
+  ${staffFragment}
+  ${pageInfoFragment}
 `
