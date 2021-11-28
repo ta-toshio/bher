@@ -8,6 +8,7 @@ type Query {
         orderBy: TodoOrder,
         where: TodoWhereInput,
     ): TodoConnection
+
     todosWithAuth(
         after: Cursor,
         first: Int,
@@ -16,4 +17,13 @@ type Query {
         orderBy: TodoOrder,
         where: TodoWhereInput,
     ): TodoConnection @auth(type: ANY)
+
+    staffs(
+        after: Cursor,
+        first: Int,
+        before: Cursor,
+        last: Int,
+        orderBy: StaffOrder,
+        where: StaffWhereInput,
+    ): StaffConnection
 }

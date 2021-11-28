@@ -5,12 +5,12 @@ package graph
 
 import (
 	"context"
-	"github.com/ta-toshio/bherb/service/firebase"
 
 	"github.com/ta-toshio/bherb/ent"
 	"github.com/ta-toshio/bherb/ent/todo"
 	"github.com/ta-toshio/bherb/graph/generated"
 	"github.com/ta-toshio/bherb/graph/model"
+	"github.com/ta-toshio/bherb/service/firebase"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input ent.CreateTodoInput) (*ent.Todo, error) {

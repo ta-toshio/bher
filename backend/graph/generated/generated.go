@@ -93,6 +93,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		Staffs        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffOrder, where *ent.StaffWhereInput) int
 		Todos         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) int
 		TodosWithAuth func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) int
 	}
@@ -105,6 +106,17 @@ type ComplexityRoot struct {
 		Role      func(childComplexity int) int
 		UID       func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
+	}
+
+	StaffConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	StaffEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
 	}
 
 	Todo struct {
@@ -139,6 +151,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Todos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) (*ent.TodoConnection, error)
 	TodosWithAuth(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) (*ent.TodoConnection, error)
+	Staffs(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffOrder, where *ent.StaffWhereInput) (*ent.StaffConnection, error)
 }
 
 type executableSchema struct {
@@ -419,6 +432,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PageInfo.StartCursor(childComplexity), true
 
+	case "Query.staffs":
+		if e.complexity.Query.Staffs == nil {
+			break
+		}
+
+		args, err := ec.field_Query_staffs_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Staffs(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.StaffOrder), args["where"].(*ent.StaffWhereInput)), true
+
 	case "Query.todos":
 		if e.complexity.Query.Todos == nil {
 			break
@@ -491,6 +516,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Staff.UpdatedAt(childComplexity), true
+
+	case "StaffConnection.edges":
+		if e.complexity.StaffConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.StaffConnection.Edges(childComplexity), true
+
+	case "StaffConnection.pageInfo":
+		if e.complexity.StaffConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.StaffConnection.PageInfo(childComplexity), true
+
+	case "StaffConnection.totalCount":
+		if e.complexity.StaffConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.StaffConnection.TotalCount(childComplexity), true
+
+	case "StaffEdge.cursor":
+		if e.complexity.StaffEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.StaffEdge.Cursor(childComplexity), true
+
+	case "StaffEdge.node":
+		if e.complexity.StaffEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.StaffEdge.Node(childComplexity), true
 
 	case "Todo.children":
 		if e.complexity.Todo.Children == nil {
@@ -1109,6 +1169,11 @@ input StaffWhereInput {
     field: TodoOrderField
 }
 
+input StaffOrder {
+    direction: OrderDirection!
+    field: StaffOrderField
+}
+
 """
 Define an input type for the mutation below.
 https://graphql.org/learn/schema/#input-types
@@ -1199,6 +1264,7 @@ type Query {
         orderBy: TodoOrder,
         where: TodoWhereInput,
     ): TodoConnection
+
     todosWithAuth(
         after: Cursor,
         first: Int,
@@ -1207,6 +1273,15 @@ type Query {
         orderBy: TodoOrder,
         where: TodoWhereInput,
     ): TodoConnection @auth(type: ANY)
+
+    staffs(
+        after: Cursor,
+        first: Int,
+        before: Cursor,
+        last: Int,
+        orderBy: StaffOrder,
+        where: StaffWhereInput,
+    ): StaffConnection
 }
 `, BuiltIn: false},
 	{Name: "graph/scalar.graphqls", Input: `"""Define an required authentification"""
@@ -1247,6 +1322,11 @@ enum Role {
     ADMIN
 }
 
+"""Define Order direction."""
+enum OrderDirection {
+    ASC
+    DESC
+}
 
 """The following enums are matched the entgql annotations in the ent/schema."""
 enum TodoOrderField {
@@ -1256,11 +1336,11 @@ enum TodoOrderField {
     TEXT
 }
 
-"""Define Order direction."""
-enum OrderDirection {
-    ASC
-    DESC
+enum StaffOrderField {
+    CREATED_AT
+    UPDATED_AT
 }
+
 
 `, BuiltIn: false},
 	{Name: "graph/type.graphqls", Input: `type PageInfo {
@@ -1319,6 +1399,17 @@ type Chart implements Node {
     update_time: Time
 }
 
+type StaffConnection {
+    totalCount: Int!
+    pageInfo: PageInfo!
+    edges: [StaffEdge]
+}
+
+type StaffEdge {
+    node: Staff
+    cursor: Cursor!
+}
+
 type Staff {
     id: ID!
     uid: String!
@@ -1327,7 +1418,9 @@ type Staff {
     role: Role!
     createdAt: Time!
     updatedAt: Time!
-}`, BuiltIn: false},
+}
+
+`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -1455,6 +1548,66 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_staffs_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.StaffOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOStaffOrder2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.StaffWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOStaffWhereInput2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
 	return args, nil
 }
 
@@ -2931,6 +3084,45 @@ func (ec *executionContext) _Query_todosWithAuth(ctx context.Context, field grap
 	return ec.marshalOTodoConnection2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐTodoConnection(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_staffs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_staffs_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Staffs(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.StaffOrder), args["where"].(*ent.StaffWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.StaffConnection)
+	fc.Result = res
+	return ec.marshalOStaffConnection2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffConnection(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3245,6 +3437,175 @@ func (ec *executionContext) _Staff_updatedAt(ctx context.Context, field graphql.
 	res := resTmp.(time.Time)
 	fc.Result = res
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _StaffConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.StaffConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "StaffConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _StaffConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.StaffConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "StaffConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2githubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _StaffConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.StaffConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "StaffConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.StaffEdge)
+	fc.Result = res
+	return ec.marshalOStaffEdge2ᚕᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _StaffEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.StaffEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "StaffEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Staff)
+	fc.Result = res
+	return ec.marshalOStaff2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaff(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _StaffEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.StaffEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "StaffEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2githubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐCursor(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.CollectedField, obj *ent.Todo) (ret graphql.Marshaler) {
@@ -7062,6 +7423,37 @@ func (ec *executionContext) unmarshalInputCreateTodoInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputStaffOrder(ctx context.Context, obj interface{}) (ent.StaffOrder, error) {
+	var it ent.StaffOrder
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "direction":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
+			it.Direction, err = ec.unmarshalNOrderDirection2githubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐOrderDirection(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "field":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
+			it.Field, err = ec.unmarshalOStaffOrderField2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffOrderField(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputStaffWhereInput(ctx context.Context, obj interface{}) (ent.StaffWhereInput, error) {
 	var it ent.StaffWhereInput
 	asMap := map[string]interface{}{}
@@ -8430,6 +8822,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_todosWithAuth(ctx, field)
 				return res
 			})
+		case "staffs":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_staffs(ctx, field)
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
@@ -8488,6 +8891,69 @@ func (ec *executionContext) _Staff(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "updatedAt":
 			out.Values[i] = ec._Staff_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var staffConnectionImplementors = []string{"StaffConnection"}
+
+func (ec *executionContext) _StaffConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.StaffConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, staffConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("StaffConnection")
+		case "totalCount":
+			out.Values[i] = ec._StaffConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._StaffConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._StaffConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var staffEdgeImplementors = []string{"StaffEdge"}
+
+func (ec *executionContext) _StaffEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.StaffEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, staffEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("StaffEdge")
+		case "node":
+			out.Values[i] = ec._StaffEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._StaffEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -9765,6 +10231,92 @@ func (ec *executionContext) unmarshalORole2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherb
 }
 
 func (ec *executionContext) marshalORole2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚋstaffᚐRole(ctx context.Context, sel ast.SelectionSet, v *staff.Role) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) marshalOStaff2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaff(ctx context.Context, sel ast.SelectionSet, v *ent.Staff) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Staff(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOStaffConnection2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffConnection(ctx context.Context, sel ast.SelectionSet, v *ent.StaffConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._StaffConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOStaffEdge2ᚕᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.StaffEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOStaffEdge2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOStaffEdge2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffEdge(ctx context.Context, sel ast.SelectionSet, v *ent.StaffEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._StaffEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOStaffOrder2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffOrder(ctx context.Context, v interface{}) (*ent.StaffOrder, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputStaffOrder(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOStaffOrderField2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffOrderField(ctx context.Context, v interface{}) (*ent.StaffOrderField, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(ent.StaffOrderField)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOStaffOrderField2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.StaffOrderField) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

@@ -3,6 +3,11 @@ input TodoOrder {
     field: TodoOrderField
 }
 
+input StaffOrder {
+    direction: OrderDirection!
+    field: StaffOrderField
+}
+
 """
 Define an input type for the mutation below.
 https://graphql.org/learn/schema/#input-types

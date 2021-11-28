@@ -54,6 +54,17 @@ type Chart implements Node {
     update_time: Time
 }
 
+type StaffConnection {
+    totalCount: Int!
+    pageInfo: PageInfo!
+    edges: [StaffEdge]
+}
+
+type StaffEdge {
+    node: Staff
+    cursor: Cursor!
+}
+
 type Staff {
     id: ID!
     uid: String!
@@ -63,3 +74,4 @@ type Staff {
     createdAt: Time!
     updatedAt: Time!
 }
+

@@ -36,6 +36,11 @@ enum Role {
     ADMIN
 }
 
+"""Define Order direction."""
+enum OrderDirection {
+    ASC
+    DESC
+}
 
 """The following enums are matched the entgql annotations in the ent/schema."""
 enum TodoOrderField {
@@ -45,9 +50,9 @@ enum TodoOrderField {
     TEXT
 }
 
-"""Define Order direction."""
-enum OrderDirection {
-    ASC
-    DESC
+enum StaffOrderField {
+    CREATED_AT
+    UPDATED_AT
 }
+
 
