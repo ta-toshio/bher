@@ -22,6 +22,7 @@ const List: React.FC<Props> = ({ data }) => {
         <tr>
           <th>email</th>
           <th>name</th>
+          <th>role</th>
           <th>action</th>
         </tr>
         </thead>
@@ -30,7 +31,12 @@ const List: React.FC<Props> = ({ data }) => {
           <tr key={`staff-${staff?.node?.id}`}>
             <td>{staff?.node?.email}</td>
             <td>{staff?.node?.name}</td>
-            <td></td>
+            <td>{staff?.node?.role}</td>
+            <td>
+              <Link href={`/admin/staffs/${staff.node.id}/edit`}>
+                <button className="button">Edit</button>
+              </Link>
+            </td>
           </tr>
         ))}
         </tbody>

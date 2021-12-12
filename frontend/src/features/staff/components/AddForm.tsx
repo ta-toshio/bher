@@ -1,19 +1,18 @@
 import React from 'react'
-import useStaffMutation, { IFormInput } from '../hooks/useStaffMutation'
-import prefectures from '../../../utils/prefecture'
+import useStaffAdd, { IFormInput } from '../hooks/useStaffAdd'
 import { Role } from '../../../api/generated/graphql'
 
 type Props = {
   initialValues?: IFormInput
 }
 
-const Form: React.FC<Props> = ({ initialValues }) => {
+const AddForm: React.FC<Props> = ({ initialValues }) => {
   const {
     register,
     handleSubmit,
     errors,
     onSubmit,
-  } = useStaffMutation({ initialValues })
+  } = useStaffAdd({ initialValues })
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -88,4 +87,4 @@ const Form: React.FC<Props> = ({ initialValues }) => {
   )
 }
 
-export default Form
+export default AddForm

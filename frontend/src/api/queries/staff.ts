@@ -52,3 +52,22 @@ export const STAFFS = gql`
   ${staffFragment}
   ${pageInfoFragment}
 `
+
+export const STAFF = gql`
+  query Staff($id: ID!) {
+    staff(id: $id) {
+      ...staffFragment
+    }
+  }
+  ${staffFragment}
+`
+
+export const UPDATE_STAFF = gql`
+  mutation UpdateStaff($id: ID! $input: UpdateStaffInput!) {
+    updateStaff(id: $id, input: $input) {
+      ...staffFragment
+    }
+  }
+  ${staffFragment}
+`
+

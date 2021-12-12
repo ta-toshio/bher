@@ -9,7 +9,7 @@ import { CREATE_STAFF_WITH_UID } from '../../../api/queries'
 import {
   CreateStaffWithUidMutation,
   CreateStaffWithUidMutationVariables,
-  Role
+  Role, StaffQuery,
 } from '../../../api/generated/graphql'
 import { useRouter } from 'next/router'
 
@@ -20,13 +20,12 @@ export interface IFormInput {
   role: string
 }
 
-const schema = yup.object({
+export const schema = yup.object({
   name: yup.string().required(),
   email: yup.string().email().required(),
   password: yup.string().required(),
   role: yup.string().required(),
 })
-
 
 type Props = {
   initialValues?: IFormInput
@@ -39,7 +38,16 @@ const defaultValues = {
   role: Role.Staff,
 }
 
-const useStaffMutation = ({ initialValues = defaultValues }: Props) => {
+export const staffToFormData = (data: StaffQuery["staff"]) => {
+  if (!data) return {}
+  return {
+    name: data.name,
+    email: data.email,
+    role: data.role,
+  }
+}
+
+const useStaffAdd = ({ initialValues = defaultValues }: Props) => {
   const router = useRouter()
   const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>({
     resolver: yupResolver(schema),
@@ -88,4 +96,4 @@ const useStaffMutation = ({ initialValues = defaultValues }: Props) => {
   }
 }
 
-export default useStaffMutation
+export default useStaffAdd

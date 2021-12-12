@@ -23,6 +23,7 @@ export type Scalars = {
 
 /** Define authenticated type */
 export enum Auth {
+  Admin = 'ADMIN',
   Any = 'ANY',
   Staff = 'STAFF',
   User = 'USER'
@@ -393,6 +394,7 @@ export type Mutation = {
   createChart: Chart;
   createStaffWithUID: Staff;
   createTodo: Todo;
+  updateStaff: Staff;
   updateTodo: Todo;
   updateTodos: Array<Todo>;
 };
@@ -422,6 +424,16 @@ export type MutationCreateStaffWithUidArgs = {
  */
 export type MutationCreateTodoArgs = {
   input: CreateTodoInput;
+};
+
+
+/**
+ * Define a mutation for creating todos.
+ * https://graphql.org/learn/queries/#mutations
+ */
+export type MutationUpdateStaffArgs = {
+  id: Scalars['ID'];
+  input: UpdateStaffInput;
 };
 
 
@@ -465,9 +477,16 @@ export type PageInfo = {
 /** Define a query for getting all todos and support the Node interface. */
 export type Query = {
   __typename?: 'Query';
+  staff?: Maybe<Staff>;
   staffs?: Maybe<StaffConnection>;
   todos?: Maybe<TodoConnection>;
   todosWithAuth?: Maybe<TodoConnection>;
+};
+
+
+/** Define a query for getting all todos and support the Node interface. */
+export type QueryStaffArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -735,6 +754,11 @@ export type TodoWhereInput = {
   textNotIn?: Maybe<Array<Scalars['String']>>;
 };
 
+export type UpdateStaffInput = {
+  name: Scalars['String'];
+  role: Role;
+};
+
 /**
  * Define an input type for the mutation below.
  * https://graphql.org/learn/schema/#input-types
@@ -783,6 +807,21 @@ export type StaffsQueryVariables = Exact<{
 
 
 export type StaffsQuery = { __typename?: 'Query', staffs?: { __typename?: 'StaffConnection', totalCount: number, edges?: Array<{ __typename?: 'StaffEdge', cursor: any, node?: { __typename?: 'Staff', id: string, uid: string, name: string, email: string, role: Role } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null | undefined, endCursor?: any | null | undefined, hasNextPage: boolean, hasPreviousPage: boolean } } | null | undefined };
+
+export type StaffQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type StaffQuery = { __typename?: 'Query', staff?: { __typename?: 'Staff', id: string, uid: string, name: string, email: string, role: Role } | null | undefined };
+
+export type UpdateStaffMutationVariables = Exact<{
+  id: Scalars['ID'];
+  input: UpdateStaffInput;
+}>;
+
+
+export type UpdateStaffMutation = { __typename?: 'Mutation', updateStaff: { __typename?: 'Staff', id: string, uid: string, name: string, email: string, role: Role } };
 
 export type TodoFragmentFragment = { __typename?: 'Todo', id: string, createdAt?: any | null | undefined, status: Status, priority: number, text: string };
 
@@ -983,6 +1022,75 @@ export function useStaffsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Sta
 export type StaffsQueryHookResult = ReturnType<typeof useStaffsQuery>;
 export type StaffsLazyQueryHookResult = ReturnType<typeof useStaffsLazyQuery>;
 export type StaffsQueryResult = Apollo.QueryResult<StaffsQuery, StaffsQueryVariables>;
+export const StaffDocument = gql`
+    query Staff($id: ID!) {
+  staff(id: $id) {
+    ...staffFragment
+  }
+}
+    ${StaffFragmentFragmentDoc}`;
+
+/**
+ * __useStaffQuery__
+ *
+ * To run a query within a React component, call `useStaffQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStaffQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStaffQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useStaffQuery(baseOptions: Apollo.QueryHookOptions<StaffQuery, StaffQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<StaffQuery, StaffQueryVariables>(StaffDocument, options);
+      }
+export function useStaffLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<StaffQuery, StaffQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<StaffQuery, StaffQueryVariables>(StaffDocument, options);
+        }
+export type StaffQueryHookResult = ReturnType<typeof useStaffQuery>;
+export type StaffLazyQueryHookResult = ReturnType<typeof useStaffLazyQuery>;
+export type StaffQueryResult = Apollo.QueryResult<StaffQuery, StaffQueryVariables>;
+export const UpdateStaffDocument = gql`
+    mutation UpdateStaff($id: ID!, $input: UpdateStaffInput!) {
+  updateStaff(id: $id, input: $input) {
+    ...staffFragment
+  }
+}
+    ${StaffFragmentFragmentDoc}`;
+export type UpdateStaffMutationFn = Apollo.MutationFunction<UpdateStaffMutation, UpdateStaffMutationVariables>;
+
+/**
+ * __useUpdateStaffMutation__
+ *
+ * To run a mutation, you first call `useUpdateStaffMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateStaffMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateStaffMutation, { data, loading, error }] = useUpdateStaffMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateStaffMutation(baseOptions?: Apollo.MutationHookOptions<UpdateStaffMutation, UpdateStaffMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateStaffMutation, UpdateStaffMutationVariables>(UpdateStaffDocument, options);
+      }
+export type UpdateStaffMutationHookResult = ReturnType<typeof useUpdateStaffMutation>;
+export type UpdateStaffMutationResult = Apollo.MutationResult<UpdateStaffMutation>;
+export type UpdateStaffMutationOptions = Apollo.BaseMutationOptions<UpdateStaffMutation, UpdateStaffMutationVariables>;
 export const TodosDocument = gql`
     query Todos($after: Cursor, $first: Int, $before: Cursor, $last: Int, $orderBy: TodoOrder, $where: TodoWhereInput) {
   todos(

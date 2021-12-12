@@ -1,14 +1,14 @@
 import { NextPage } from 'next'
 import React from 'react'
 import StaffLayout from '../../../components/layout/Staff'
-import Form from '../components/Form'
+import AddForm from '../components/AddForm'
 
 const AddPage: NextPage = () => {
   return (
     <StaffLayout>
       <div className='columns'>
         <div className='column'>
-          <Form />
+          <AddForm />
         </div>
       </div>
     </StaffLayout>

@@ -10,8 +10,6 @@ const StaffLayout: React.FC = ({ children }) => {
   const { pathname } = useRouter()
   if (checking) return <></>
 
-  console.log(pathname)
-
   return (
     <>
       <Head>
