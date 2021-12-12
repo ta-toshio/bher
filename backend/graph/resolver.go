@@ -27,7 +27,7 @@ func NewConfig(client *ent.Client) generated.Config {
 
 	c.Directives.Auth = func(ctx context.Context, obj interface{}, next graphql.Resolver, auth model.Auth) (res interface{}, err error) {
 		staff := middleware.ForStaffContext(ctx)
-		if (auth == model.AuthAny || auth == model.AuthStaff) && staff == nil {
+		if (auth == model.AuthAny || auth == model.AuthStaff || auth == model.AuthAdmin) && staff == nil {
 			return nil, fmt.Errorf("access denied")
 		}
 		//user := middleware.ForUserContext(ctx)

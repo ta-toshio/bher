@@ -8,5 +8,6 @@ type Mutation {
     updateTodos(ids: [ID!]!, input: UpdateTodoInput!): [Todo!]!
     createChart(input: CreateChartInput!): Chart!
     createStaffWithUID(input: CreateStaffWithUIDInput!): Staff!
+    updateStaff(id: ID!, input: UpdateStaffInput!): Staff!
 }
 

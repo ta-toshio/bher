@@ -16,6 +16,7 @@ scalar Cursor
 
 """Define authenticated type"""
 enum Auth {
+    ADMIN
     STAFF
     USER
     ANY

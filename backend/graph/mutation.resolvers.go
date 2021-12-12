@@ -61,6 +61,14 @@ func (r *mutationResolver) CreateStaffWithUID(ctx context.Context, input model.C
 	return staff, err
 }
 
+func (r *mutationResolver) UpdateStaff(ctx context.Context, id int, input ent.UpdateStaffInput) (*ent.Staff, error) {
+	return ent.FromContext(ctx).
+		Staff.
+		UpdateOneID(id).
+		SetInput(input).
+		Save(ctx)
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 

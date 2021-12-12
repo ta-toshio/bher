@@ -9,12 +9,14 @@ import (
 type Auth string
 
 const (
+	AuthAdmin Auth = "ADMIN"
 	AuthStaff Auth = "STAFF"
 	AuthUser  Auth = "USER"
 	AuthAny   Auth = "ANY"
 )
 
 var AllAuth = []Auth{
+	AuthAdmin,
 	AuthStaff,
 	AuthUser,
 	AuthAny,
@@ -22,7 +24,7 @@ var AllAuth = []Auth{
 
 func (e Auth) IsValid() bool {
 	switch e {
-	case AuthStaff, AuthUser, AuthAny:
+	case AuthAdmin, AuthStaff, AuthUser, AuthAny:
 		return true
 	}
 	return false

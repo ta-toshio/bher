@@ -75,3 +75,8 @@ input CreateStaffWithUIDInput {
     name: String!
     role: Role!
 }
+
+input UpdateStaffInput{
+    name: String!
+    role: Role!
+}

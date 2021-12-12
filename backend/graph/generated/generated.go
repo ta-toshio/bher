@@ -81,6 +81,7 @@ type ComplexityRoot struct {
 		CreateChart        func(childComplexity int, input ent.CreateChartInput) int
 		CreateStaffWithUID func(childComplexity int, input model.CreateStaffWithUIDInput) int
 		CreateTodo         func(childComplexity int, input ent.CreateTodoInput) int
+		UpdateStaff        func(childComplexity int, id int, input ent.UpdateStaffInput) int
 		UpdateTodo         func(childComplexity int, id int, input ent.UpdateTodoInput) int
 		UpdateTodos        func(childComplexity int, ids []int, input ent.UpdateTodoInput) int
 	}
@@ -93,6 +94,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		Staff         func(childComplexity int, id int) int
 		Staffs        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffOrder, where *ent.StaffWhereInput) int
 		Todos         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) int
 		TodosWithAuth func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) int
@@ -147,11 +149,13 @@ type MutationResolver interface {
 	UpdateTodos(ctx context.Context, ids []int, input ent.UpdateTodoInput) ([]*ent.Todo, error)
 	CreateChart(ctx context.Context, input ent.CreateChartInput) (*ent.Chart, error)
 	CreateStaffWithUID(ctx context.Context, input model.CreateStaffWithUIDInput) (*ent.Staff, error)
+	UpdateStaff(ctx context.Context, id int, input ent.UpdateStaffInput) (*ent.Staff, error)
 }
 type QueryResolver interface {
 	Todos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) (*ent.TodoConnection, error)
 	TodosWithAuth(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) (*ent.TodoConnection, error)
 	Staffs(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffOrder, where *ent.StaffWhereInput) (*ent.StaffConnection, error)
+	Staff(ctx context.Context, id int) (*ent.Staff, error)
 }
 
 type executableSchema struct {
@@ -380,6 +384,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateTodo(childComplexity, args["input"].(ent.CreateTodoInput)), true
 
+	case "Mutation.updateStaff":
+		if e.complexity.Mutation.UpdateStaff == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateStaff_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateStaff(childComplexity, args["id"].(int), args["input"].(ent.UpdateStaffInput)), true
+
 	case "Mutation.updateTodo":
 		if e.complexity.Mutation.UpdateTodo == nil {
 			break
@@ -431,6 +447,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PageInfo.StartCursor(childComplexity), true
+
+	case "Query.staff":
+		if e.complexity.Query.Staff == nil {
+			break
+		}
+
+		args, err := ec.field_Query_staff_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Staff(childComplexity, args["id"].(int)), true
 
 	case "Query.staffs":
 		if e.complexity.Query.Staffs == nil {
@@ -1240,7 +1268,13 @@ input CreateStaffWithUIDInput {
     password: String!
     name: String!
     role: Role!
-}`, BuiltIn: false},
+}
+
+input UpdateStaffInput{
+    name: String!
+    role: Role!
+}
+`, BuiltIn: false},
 	{Name: "graph/mutation.graphqls", Input: `"""
 Define a mutation for creating todos.
 https://graphql.org/learn/queries/#mutations
@@ -1251,6 +1285,7 @@ type Mutation {
     updateTodos(ids: [ID!]!, input: UpdateTodoInput!): [Todo!]!
     createChart(input: CreateChartInput!): Chart!
     createStaffWithUID(input: CreateStaffWithUIDInput!): Staff!
+    updateStaff(id: ID!, input: UpdateStaffInput!): Staff!
 }
 
 `, BuiltIn: false},
@@ -1281,7 +1316,9 @@ type Query {
         last: Int,
         orderBy: StaffOrder,
         where: StaffWhereInput,
-    ): StaffConnection @auth(type: STAFF)
+    ): StaffConnection @auth(type: ADMIN)
+
+    staff(id: ID!): Staff @auth(type: ADMIN)
 }
 `, BuiltIn: false},
 	{Name: "graph/scalar.graphqls", Input: `"""Define an required authentification"""
@@ -1302,6 +1339,7 @@ scalar Cursor
 
 """Define authenticated type"""
 enum Auth {
+    ADMIN
     STAFF
     USER
     ANY
@@ -1488,6 +1526,30 @@ func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_updateStaff_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 ent.UpdateStaffInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateStaffInput2githubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐUpdateStaffInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1548,6 +1610,21 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_staff_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -2848,6 +2925,48 @@ func (ec *executionContext) _Mutation_createStaffWithUID(ctx context.Context, fi
 	return ec.marshalNStaff2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaff(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_updateStaff(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateStaff_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateStaff(rctx, args["id"].(int), args["input"].(ent.UpdateStaffInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Staff)
+	fc.Result = res
+	return ec.marshalNStaff2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaff(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *ent.PageInfo) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3113,7 +3232,7 @@ func (ec *executionContext) _Query_staffs(ctx context.Context, field graphql.Col
 			return ec.resolvers.Query().Staffs(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.StaffOrder), args["where"].(*ent.StaffWhereInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			typeArg, err := ec.unmarshalNAuth2githubᚗcomᚋtaᚑtoshioᚋbherbᚋgraphᚋmodelᚐAuth(ctx, "STAFF")
+			typeArg, err := ec.unmarshalNAuth2githubᚗcomᚋtaᚑtoshioᚋbherbᚋgraphᚋmodelᚐAuth(ctx, "ADMIN")
 			if err != nil {
 				return nil, err
 			}
@@ -3145,6 +3264,69 @@ func (ec *executionContext) _Query_staffs(ctx context.Context, field graphql.Col
 	res := resTmp.(*ent.StaffConnection)
 	fc.Result = res
 	return ec.marshalOStaffConnection2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaffConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_staff(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_staff_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Staff(rctx, args["id"].(int))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			typeArg, err := ec.unmarshalNAuth2githubᚗcomᚋtaᚑtoshioᚋbherbᚋgraphᚋmodelᚐAuth(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0, typeArg)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.Staff); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/ta-toshio/bherb/ent.Staff`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Staff)
+	fc.Result = res
+	return ec.marshalOStaff2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐStaff(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -8483,6 +8665,37 @@ func (ec *executionContext) unmarshalInputTodoWhereInput(ctx context.Context, ob
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateStaffInput(ctx context.Context, obj interface{}) (ent.UpdateStaffInput, error) {
+	var it ent.UpdateStaffInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "role":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
+			it.Role, err = ec.unmarshalNRole2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚋstaffᚐRole(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateTodoInput(ctx context.Context, obj interface{}) (ent.UpdateTodoInput, error) {
 	var it ent.UpdateTodoInput
 	asMap := map[string]interface{}{}
@@ -8762,6 +8975,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "updateStaff":
+			out.Values[i] = ec._Mutation_updateStaff(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8855,6 +9073,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_staffs(ctx, field)
+				return res
+			})
+		case "staff":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_staff(ctx, field)
 				return res
 			})
 		case "__type":
@@ -9648,6 +9877,27 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
+func (ec *executionContext) unmarshalNString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNString2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := graphql.MarshalString(*v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
 	res, err := graphql.UnmarshalTime(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -9724,6 +9974,11 @@ func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherb�
 func (ec *executionContext) unmarshalNTodoWhereInput2ᚖgithubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐTodoWhereInput(ctx context.Context, v interface{}) (*ent.TodoWhereInput, error) {
 	res, err := ec.unmarshalInputTodoWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateStaffInput2githubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐUpdateStaffInput(ctx context.Context, v interface{}) (ent.UpdateStaffInput, error) {
+	res, err := ec.unmarshalInputUpdateStaffInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNUpdateTodoInput2githubᚗcomᚋtaᚑtoshioᚋbherbᚋentᚐUpdateTodoInput(ctx context.Context, v interface{}) (ent.UpdateTodoInput, error) {
